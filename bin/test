@@ -1,0 +1,48 @@
+#!/bin/sh
+
+#
+# Local test script to test docker images
+#
+
+# exit if a command fails
+set -e
+
+CURL=$(which curl)
+DOCKER=$(which docker)
+
+if [ "$CURL" = '' ]; then
+    echo 'The package curl is required\n'
+    exit 1
+fi
+
+if [ "$DOCKER" = '' ]; then
+    echo 'Docker is required\n'
+    exit 1
+fi
+
+echo "#\n# Cleaning docker\n#\n"
+running_containers=$(docker ps -aq)
+if [ "$running_containers" ] 
+    then
+        docker stop $running_containers -t 0 && docker system prune -f
+fi
+echo "# Cleaned"
+
+echo "#\n# Running test\n#\n"
+# Testing container readiness
+echo "### Testing container readiness..."
+TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox 03192859189254/toolbox:latest )
+TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
+TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
+MAX_TRIES=300
+SECONDS_BETWEEN_TRIES=1
+c=0
+while ! eval "$TEST_CONDITION"; do if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BREAK_CONDITION" ; then echo "Error toolbox container failed, printing logs and exiting\n"; docker logs $TEST_CONTAINER_MAIN_ID; exit 1; else c=$(($c + 1)); fi; echo "Try $c failed"; sleep ${SECONDS_BETWEEN_TRIES}; done && echo "### Container ready \n"
+
+# Testing binaries
+echo "### Testing binaries..."
+docker exec $TEST_CONTAINER_NGINX_ID kubectl --version
+
+
+
+exit 0
