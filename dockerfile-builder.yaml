@@ -1,0 +1,66 @@
+project: 
+  title: &project_title alphasocket/dockerized-toolbox
+  codename: &project_codename toolbox
+  description: All required cli in one container
+
+#
+# Build process
+# Creates dockerfile and file used in it
+#
+build:
+  envvars:
+    name: *project_codename
+    cmd: "bash -i"
+    # Varni
+    paths:
+      binaries:
+        folder: /usr/local/bin/
+
+#
+# Setup process injected in dockerfile
+#
+setup:
+  # Setup env 
+  envvars:
+    dependencies:
+      runtime: bash htop curl git mysql-client fcgi nodejs nodejs-npm php7 python py-pip
+
+#
+# Config process run just before the entrypoint
+#
+test:
+  processes:
+    #
+    # Starting
+    #
+    - title: "Testing container readiness"
+      commands:
+        - TEST_CONTAINER_MAIN_ID=$(
+            docker run
+              -d --name=$TEST_CONTAINER_NAME
+              ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
+          )
+        - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
+        - TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
+        - MAX_TRIES=300
+        - SECONDS_BETWEEN_TRIES=1
+        - c=0
+        - while ! eval "$TEST_CONDITION"; 
+          do 
+            if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BREAK_CONDITION" ; then
+                echo "Error $TEST_CONTAINER_NAME container failed, printing logs and exiting\n";
+                docker logs $TEST_CONTAINER_MAIN_ID;
+                exit 1;
+              else
+                c=$(($c + 1));
+            fi;
+            echo "Try $c failed"; 
+            sleep ${SECONDS_BETWEEN_TRIES}; 
+          done && echo "### Container ready \n"
+
+    # 
+    # Run nginx
+    # 
+    - title: "Testing binaries"
+      commands:
+        - docker exec $TEST_CONTAINER_NGINX_ID kubectl --version
