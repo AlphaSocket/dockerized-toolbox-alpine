@@ -48,11 +48,17 @@ ENV \
 	CONFIG_REDINESS_TEST="true" \
 	CONFIG_LIVENESS_TEST="true" \
 	CONFIG_PATHS_CONTAINER_STATUS="/tmp/container_status"
+ADD imports/bin/docker-config /usr/local/bin/docker-config
+ADD imports/bin/docker-run /usr/local/bin/docker-run
+ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
+ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
+ADD imports/bin/setup /usr/local/bin/setup/1524068709
+ADD imports/bin/config /usr/local/bin/config/1524068709
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1524068097 1>/dev/stdout 2>/dev/stderr
+    /usr/local/bin/setup/1524068709 1>/dev/stdout 2>/dev/stderr
 
 
 
