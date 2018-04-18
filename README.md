@@ -9,6 +9,7 @@ All required cli in one container
 | Prd image | [![](https://images.microbadger.com/badges/image/alphasocket/toolbox:latest.svg)](https://microbadger.com/images/alphasocket/toolbox:latest ) | [![](https://images.microbadger.com/badges/version/alphasocket/toolbox:latest.svg)](https://microbadger.com/images/alphasocket/toolbox:latest) |
 
 ## Branches & Versions
+- latest
 
 
 ## Packages installed
