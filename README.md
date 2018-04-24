@@ -24,6 +24,7 @@ All required cli in one container
   + nodejs-npm
   + php7
   + python
+  + python3
   + py-pip
 
 

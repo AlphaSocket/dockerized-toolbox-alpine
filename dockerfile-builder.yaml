@@ -25,7 +25,7 @@ setup:
     dependencies:
       runtime: bash htop curl git mysql-client fcgi nodejs nodejs-npm php7 python python3 py-pip
   processes:
-    - title: "Install extra binaries
+    - title: "Install extra binaries"
       commands:
         # Git
         - curl -sSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release.sh -o /usr/local/bin/git-get-latest-release
