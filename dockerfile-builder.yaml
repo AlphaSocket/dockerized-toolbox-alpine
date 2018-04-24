@@ -28,8 +28,9 @@ setup:
     - title: "Install extra binaries"
       commands:
         # Git
-        - curl -sSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release.sh -o /usr/local/bin/git-get-latest-release
+        - curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release.sh -o /usr/local/bin/git-get-latest-release
         - chmod +x /usr/local/bin/git-get-latest-release
+        
         # PHP
         - curl -sSL https://phar.phpunit.de/phpunit.phar -o /usr/local/bin/phpunit.phar
         - curl -sSL http://static.phpmd.org/php/latest/phpmd.phar -o /usr/local/bin/phpmd.phar
@@ -43,7 +44,7 @@ setup:
         
         - curl -sSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o /usr/local/bin/modman
         
-        - MAGECONFIGSYNC_LATEST=$(git get-latest-release https://github.com/punkstar/mageconfigsync )
+        - MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
         - curl -sSL https://github.com/punkstar/mageconfigsync/releases/download/$MAGECONFIGSYNC_LATEST/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o /usr/local/bin/mageconfigsync.phar
         
         # Kubernetes
@@ -52,11 +53,11 @@ setup:
         
         - curl -sSL https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -o /usr/local/bin/minikube
         
-        - KOPS_LATEST=$(git get-latest-release https://github.com/kubernetes/kops )
+        - KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )
         - curl -sSL https://github.com/kubernetes/kops/releases/download/$KOPS_LATEST/kops-linux-amd64 -o /usr/local/bin/kops
         
-        - ARGO_LATEST=$(git get-latest-release https://github.com/argoproj/argo )
-        - curl -sSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-darwin-amd64 -o /usr/local/bin/argo
+        - ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
+        - curl -sSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-linux-amd64 -o /usr/local/bin/argo
         
         # OnePassword
         - mkdir /tmp/op

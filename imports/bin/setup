@@ -8,7 +8,7 @@ apk add --no-cache gettext $SETUP_DEPENDENCIES_SETUP $SETUP_DEPENDENCIES_CONFIG 
 
 # Install extra binaries
 echo "### Install extra binaries..."
-curl -sSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release.sh -o /usr/local/bin/git-get-latest-release
+curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release.sh -o /usr/local/bin/git-get-latest-release
 chmod +x /usr/local/bin/git-get-latest-release
 curl -sSL https://phar.phpunit.de/phpunit.phar -o /usr/local/bin/phpunit.phar
 curl -sSL http://static.phpmd.org/php/latest/phpmd.phar -o /usr/local/bin/phpmd.phar
@@ -18,15 +18,15 @@ curl -sSL https://getcomposer.org/composer.phar -o /usr/local/bin/composer.phar
 curl -sSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp-cli.phar
 curl -sSL https://files.magerun.net/n98-magerun-latest.phar -o /usr/local/bin/n98-magerun.phar
 curl -sSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o /usr/local/bin/modman
-MAGECONFIGSYNC_LATEST=$(git get-latest-release https://github.com/punkstar/mageconfigsync )
+MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
 curl -sSL https://github.com/punkstar/mageconfigsync/releases/download/$MAGECONFIGSYNC_LATEST/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o /usr/local/bin/mageconfigsync.phar
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 curl -sSL https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_LATEST/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
 curl -sSL https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -o /usr/local/bin/minikube
-KOPS_LATEST=$(git get-latest-release https://github.com/kubernetes/kops )
+KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )
 curl -sSL https://github.com/kubernetes/kops/releases/download/$KOPS_LATEST/kops-linux-amd64 -o /usr/local/bin/kops
-ARGO_LATEST=$(git get-latest-release https://github.com/argoproj/argo )
-curl -sSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-darwin-amd64 -o /usr/local/bin/argo
+ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
+curl -sSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-linux-amd64 -o /usr/local/bin/argo
 mkdir /tmp/op
 curl -sSL https://cache.agilebits.com/dist/1P/op/pkg/v0.4/op_linux_amd64_v0.4.zip -o /tmp/op/op_linux_amd64_v0.4.zip
 unzip /tmp/op/op_linux_amd64_v0.4.zip -d /tmp/op
