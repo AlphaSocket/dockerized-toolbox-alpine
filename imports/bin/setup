@@ -8,7 +8,7 @@ apk add --no-cache gettext $SETUP_DEPENDENCIES_SETUP $SETUP_DEPENDENCIES_CONFIG 
 
 # Install extra binaries
 echo "### Install extra binaries..."
-curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release.sh -o /usr/local/bin/git-get-latest-release
+curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o /usr/local/bin/git-get-latest-release
 chmod +x /usr/local/bin/git-get-latest-release
 curl -sSL https://phar.phpunit.de/phpunit.phar -o /usr/local/bin/phpunit.phar
 curl -sSL http://static.phpmd.org/php/latest/phpmd.phar -o /usr/local/bin/phpmd.phar
