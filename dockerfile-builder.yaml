@@ -28,7 +28,7 @@ setup:
     - title: "Install extra binaries"
       commands:
         # Git
-        - curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release.sh -o /usr/local/bin/git-get-latest-release
+        - curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o /usr/local/bin/git-get-latest-release
         - chmod +x /usr/local/bin/git-get-latest-release
         
         # PHP
