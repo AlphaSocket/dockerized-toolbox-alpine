@@ -35,7 +35,8 @@ ENV \
 	SETUP_PATHS_CONFIG="/usr/local/bin/config" \
 	SETUP_DEPENDENCIES_SETUP="" \
 	SETUP_DEPENDENCIES_CONFIG="" \
-	SETUP_DEPENDENCIES_PHP="php@php php-curl@php php-dom@php php-gd@php php-gettext@php php-iconv@php php-json@php php-mbstring@php php-mcrypt@php php-mysqli@php php-opcache@php php-openssl@php php-pdo@php php-pdo_dblib@php php-pdo_mysql@php php-pdo_pgsql@php php-pdo_sqlite@php php-pear@php php-pgsql@php php-phar@php php-phpdbg@php php-posix@php php-session@php php-soap@php php-sockets@php php-sqlite3@php php-xml@php php-zip@php php-zlib" \
+	SETUP_DEPENDENCIES_PHP7_2="php@php7_2 php-curl@php7_2 php-dom@php7_2 php-gd@php7_2 php-gettext@php7_2 php-iconv@php7_2 php-json@php7_2 php-mbstring@php7_2 php-mysqli@php7_2 php-opcache@php7_2 php-openssl@php7_2 php-pdo@php7_2 php-pdo_dblib@php7_2 php-pdo_mysql@php7_2 php-pdo_pgsql@php7_2 php-pdo_sqlite@php7_2 php-pear@php7_2 php-pgsql@php7_2 php-phar@php7_2 php-phpdbg@php7_2 php-posix@php7_2 php-session@php7_2 php-soap@php7_2 php-sockets@php7_2 php-sqlite3@php7_2 php-xml@php7_2 php-zip@php7_2 php-zlib" \
+	SETUP_DEPENDENCIES_PHP7_0="php@php7_0 php-curl@php7_0 php-dom@php7_0 php-gd@php7_0 php-gettext@php7_0 php-iconv@php7_0 php-json@php7_0 php-mbstring@php7_0 php-mcrypt@php7_0 php-mysqli@php7_0 php-opcache@php7_0 php-openssl@php7_0 php-pdo@php7_0 php-pdo_dblib@php7_0 php-pdo_mysql@php7_0 php-pdo_pgsql@php7_0 php-pdo_sqlite@php7_0 php-pear@php7_0 php-pgsql@php7_0 php-phar@php7_0 php-phpdbg@php7_0 php-posix@php7_0 php-session@php7_0 php-soap@php7_0 php-sockets@php7_0 php-sqlite3@php7_0 php-xml@php7_0 php-zip@php7_0 php-zlib" \
 	SETUP_DEPENDENCIES_RUNTIME="bash htop git mysql-client fcgi nodejs nodejs-npm python python3 py-pip $SETUP_DEPENDENCIES_PHP" \
 	CONFIG_GROUPS_MAIN_ID="1000" \
 	CONFIG_GROUPS_MAIN_NAME="docker" \
@@ -54,13 +55,13 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-run /usr/local/bin/docker-run
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1524773838
-ADD imports/bin/config /usr/local/bin/config/1524773838
+ADD imports/bin/setup /usr/local/bin/setup/1524774260
+ADD imports/bin/config /usr/local/bin/config/1524774260
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1524773838 1>/dev/stdout 2>/dev/stderr
+    /usr/local/bin/setup/1524774260 1>/dev/stdout 2>/dev/stderr
 
 
 
