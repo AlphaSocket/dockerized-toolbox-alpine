@@ -28,7 +28,7 @@ setup:
   processes:
     - title: "Setup repository"
       commands:
-        - curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php.pub
+        - curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php-alpine.rsa.pub
         - echo '@php https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
         
     - title: "Install extra binaries"
