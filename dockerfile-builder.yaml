@@ -22,16 +22,19 @@ build:
 setup:
   # Setup env 
   envvars:
-    repositories:
-      php:
-        url: "https://php.codecasts.rocks/v3.7/php-7.2"
-        key_url: "https://php.codecasts.rocks/php-alpine.rsa.pub"
     dependencies:
       php: php@php php-curl@php php-dom@php php-gd@php php-gettext@php php-iconv@php php-json@php php-mbstring@php php-mcrypt@php php-mysqli@php php-opcache@php php-openssl@php php-pdo@php php-pdo_dblib@php php-pdo_mysql@php php-pdo_pgsql@php php-pdo_sqlite@php php-pear@php php-pgsql@php php-phar@php php-phpdbg@php php-posix@php php-session@php php-soap@php php-sockets@php php-sqlite3@php php-xml@php php-zip@php php-zlib
       runtime: bash htop git mysql-client fcgi nodejs nodejs-npm python python3 py-pip $SETUP_DEPENDENCIES_PHP
   processes:
+    - title: "Setup repository"
+      commands:
+        - curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php.pub
+        - echo '@php https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
+        
     - title: "Install extra binaries"
       commands:
+        - curl 
+        - apk add --no-cache $SETUP_DEPENDENCIES_PHP
         # Git
         - curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
         - chmod +x $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
