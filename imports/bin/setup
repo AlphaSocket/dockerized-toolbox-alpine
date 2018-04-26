@@ -13,7 +13,6 @@ echo '@php https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
 
 # Install extra binaries
 echo "### Install extra binaries..."
-curl
 apk add --no-cache $SETUP_DEPENDENCIES_PHP
 curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
 chmod +x $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release

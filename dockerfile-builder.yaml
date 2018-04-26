@@ -33,7 +33,6 @@ setup:
         
     - title: "Install extra binaries"
       commands:
-        - curl 
         - apk add --no-cache $SETUP_DEPENDENCIES_PHP
         # Git
         - curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
