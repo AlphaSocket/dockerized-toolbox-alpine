@@ -16,16 +16,15 @@ All required cli in one container
 - Runtime dependencies:
   + bash
   + htop
-  + curl
   + git
   + mysql-client
   + fcgi
   + nodejs
   + nodejs-npm
-  + php7
   + python
   + python3
   + py-pip
+  + $SETUP_DEPENDENCIES_PHP
 
 
 ## Configurable envvars
