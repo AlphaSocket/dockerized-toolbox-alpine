@@ -24,17 +24,21 @@ ENV \
 	BUILD_VERSION="latest" \
 	BUILD_ENV="prd" \
 	BUILD_FROM="alpine:latest" \
+	BUILD_FAMILY="alpine" \
 	BUILD_PORTS_MAIN="" \
 	BUILD_PORTS_ADDITIONAL="" \
 	BUILD_NAME="toolbox" \
-	BUILD_CMD="bash -i" \
-	BUILD_PATHS_BINARIES_FOLDER="/usr/local/bin/" \
+	BUILD_CMD="sleep 999" \
+	BUILD_PATHS_BINARIES_FOLDER="/usr/local/bin" \
 	SETUP_PATHS_BINARIES="/usr/local/bin" \
 	SETUP_PATHS_SETUP="/usr/local/bin/setup" \
 	SETUP_PATHS_CONFIG="/usr/local/bin/config" \
+	SETUP_REPOSITORIES_PHP_URL="https://php.codecasts.rocks/v3.7/php-7.2" \
+	SETUP_REPOSITORIES_PHP_KEY_URL="https://php.codecasts.rocks/php-alpine.rsa.pub" \
 	SETUP_DEPENDENCIES_SETUP="" \
 	SETUP_DEPENDENCIES_CONFIG="" \
-	SETUP_DEPENDENCIES_RUNTIME="bash htop curl git mysql-client fcgi nodejs nodejs-npm php7 python python3 py-pip" \
+	SETUP_DEPENDENCIES_PHP="php@php php-curl@php php-dom@php php-gd@php php-gettext@php php-iconv@php php-json@php php-mbstring@php php-mcrypt@php php-mysqli@php php-opcache@php php-openssl@php php-pdo@php php-pdo_dblib@php php-pdo_mysql@php php-pdo_pgsql@php php-pdo_sqlite@php php-pear@php php-pgsql@php php-phar@php php-phpdbg@php php-posix@php php-session@php php-soap@php php-sockets@php php-sqlite3@php php-xml@php php-zip@php php-zlib" \
+	SETUP_DEPENDENCIES_RUNTIME="bash htop git mysql-client fcgi nodejs nodejs-npm python python3 py-pip $SETUP_DEPENDENCIES_PHP" \
 	CONFIG_GROUPS_MAIN_ID="1000" \
 	CONFIG_GROUPS_MAIN_NAME="docker" \
 	CONFIG_GROUPS_ADDITIONAL_ID="1001" \
@@ -52,13 +56,13 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-run /usr/local/bin/docker-run
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1524592949
-ADD imports/bin/config /usr/local/bin/config/1524592949
+ADD imports/bin/setup /usr/local/bin/setup/1524771194
+ADD imports/bin/config /usr/local/bin/config/1524771194
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1524592949 1>/dev/stdout 2>/dev/stderr
+    /usr/local/bin/setup/1524771194 1>/dev/stdout 2>/dev/stderr
 
 
 

@@ -8,7 +8,7 @@ set -e
 $(which docker-config)
 
 echo "### Starting container service"
-sh -c "bash -i"
+sh -c "sleep 999"
 
 # Container command is failed if exiting here
 exit $?
