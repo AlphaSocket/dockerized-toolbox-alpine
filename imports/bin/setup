@@ -8,7 +8,7 @@ apk add --no-cache curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $SETUP
 
 # Setup repository
 echo "### Setup repository..."
-curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php.pub
+curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php-alpine.rsa.pub
 echo '@php https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
 
 # Install extra binaries
