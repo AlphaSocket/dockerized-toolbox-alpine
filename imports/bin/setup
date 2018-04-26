@@ -3,8 +3,8 @@ set -e
 
 # Setup extra repositories
 echo "### Setup extra repositories..."
-OrderedDict([('command', 'curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php.pub')])
-OrderedDict([('command', "echo '@php https://php.codecasts.rocks/v3.7/php-7.2 >> /etc/apk/repositories")])
+curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php.pub
+echo '@php https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
 
 # Install all dependencies
 echo "### Install all dependencies..."
