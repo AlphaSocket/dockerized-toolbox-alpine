@@ -6,15 +6,8 @@ echo "### Install all dependencies..."
 apk add --no-cache curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $SETUP_DEPENDENCIES_CONFIG $SETUP_DEPENDENCIES_RUNTIME
 
 
-# Setup repository
-echo "### Setup repository..."
-curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php-alpine.rsa.pub
-echo '@php7_2 https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
-echo '@php7_0 https://php.codecasts.rocks/v3.7/php-7.0' >> /etc/apk/repositories
-
 # Install extra binaries
 echo "### Install extra binaries..."
-apk add --no-cache $SETUP_DEPENDENCIES_PHP
 curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
 chmod +x $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
 curl -fsSL https://phar.phpunit.de/phpunit.phar -o $BUILD_PATHS_BINARIES_FOLDER/phpunit.phar
