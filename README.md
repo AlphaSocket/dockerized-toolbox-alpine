@@ -16,7 +16,6 @@ All required cli in one container
 - Runtime dependencies:
   + bash
   + htop
-  + docker
   + git
   + mysql-client
   + fcgi
