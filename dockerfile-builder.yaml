@@ -116,4 +116,5 @@ test:
     # 
     - title: "Testing binaries"
       commands:
-        - docker exec $TEST_CONTAINER_NGINX_ID kubectl --version
+        - docker exec $TEST_CONTAINER_MAIN_ID n98-magerun.phar --version
+        - docker exec $TEST_CONTAINER_MAIN_ID kubectl --version
