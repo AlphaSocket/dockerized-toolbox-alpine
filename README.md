@@ -1,12 +1,12 @@
-# alphasocket/dockerized-toolbox
-#### toolbox
+# alphasocket/dockerized-toolbox-alpine
+#### toolbox-alpine
 All required cli in one container
 
 
-| [![Build Status](https://semaphoreci.com/api/v1/alphasocket/dockerized-toolbox/branches/latest/badge.svg)](https://semaphoreci.com/alphasocket/dockerized-toolbox) | Size / Layers | Version |
+| [![Build Status](https://semaphoreci.com/api/v1/alphasocket/dockerized-toolbox-alpine/branches/latest/badge.svg)](https://semaphoreci.com/alphasocket/dockerized-toolbox-alpine) | Size / Layers | Version |
 | ----- | ----- | ----- |
-| Dev image | [![](https://images.microbadger.com/badges/image/03192859189254/dockerized-toolbox:latest.svg)](https://microbadger.com/images/03192859189254/toolbox:latest ) | [![](https://images.microbadger.com/badges/version/03192859189254/dockerized-toolbox:latest.svg)](https://microbadger.com/images/03192859189254/toolbox:latest) |
-| Prd image | [![](https://images.microbadger.com/badges/image/alphasocket/toolbox:latest.svg)](https://microbadger.com/images/alphasocket/toolbox:latest ) | [![](https://images.microbadger.com/badges/version/alphasocket/toolbox:latest.svg)](https://microbadger.com/images/alphasocket/toolbox:latest) |
+| Dev image | [![](https://images.microbadger.com/badges/image/03192859189254/dockerized-toolbox-alpine:latest.svg)](https://microbadger.com/images/03192859189254/toolbox-alpine:latest ) | [![](https://images.microbadger.com/badges/version/03192859189254/dockerized-toolbox-alpine:latest.svg)](https://microbadger.com/images/03192859189254/toolbox-alpine:latest) |
+| Prd image | [![](https://images.microbadger.com/badges/image/alphasocket/toolbox-alpine:latest.svg)](https://microbadger.com/images/alphasocket/toolbox-alpine:latest ) | [![](https://images.microbadger.com/badges/version/alphasocket/toolbox-alpine:latest.svg)](https://microbadger.com/images/alphasocket/toolbox-alpine:latest) |
 
 ## Branches & Versions
 - latest
