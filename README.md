@@ -28,6 +28,7 @@ All required cli in one container
   + php7-curl
   + php7-dom
   + php7-gd
+  + php7-ctype
   + php7-gettext
   + php7-iconv
   + php7-json
