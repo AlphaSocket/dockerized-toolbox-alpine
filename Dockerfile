@@ -19,7 +19,7 @@ ENV \
 	GENERAL_KEYS_PRD="prd" \
 	BUILD_USER="03192859189254" \
 	BUILD_REGISTRY="docker.io" \
-	BUILD_REPO="https://github.com/alphaSocket/dockerized-toolbox" \
+	BUILD_REPO="https://github.com/alphaSocket/dockerized-toolbox-alpine" \
 	BUILD_BRANCH="latest" \
 	BUILD_VERSION="latest" \
 	BUILD_ENV="prd" \
@@ -27,7 +27,7 @@ ENV \
 	BUILD_FAMILY="alpine" \
 	BUILD_PORTS_MAIN="" \
 	BUILD_PORTS_ADDITIONAL="" \
-	BUILD_NAME="toolbox" \
+	BUILD_NAME="toolbox-alpine" \
 	BUILD_CMD="sleep 999" \
 	BUILD_PATHS_BINARIES_FOLDER="/usr/local/bin" \
 	SETUP_PATHS_BINARIES="/usr/local/bin" \
@@ -54,13 +54,13 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-run /usr/local/bin/docker-run
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1524825668
-ADD imports/bin/config /usr/local/bin/config/1524825668
+ADD imports/bin/setup /usr/local/bin/setup/1524825828
+ADD imports/bin/config /usr/local/bin/config/1524825828
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1524825668 1>/dev/stdout 2>/dev/stderr
+    /usr/local/bin/setup/1524825828 1>/dev/stdout 2>/dev/stderr
 
 
 
@@ -70,4 +70,4 @@ CMD ["/usr/local/bin/docker-run"]
 
 LABEL \
     org.label-schema.vcs-ref="$BUILD_COMMIT" \
-    org.label-schema.vcs-url="https://github.com/alphaSocket/dockerized-toolbox"
+    org.label-schema.vcs-url="https://github.com/alphaSocket/dockerized-toolbox-alpine"

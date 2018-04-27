@@ -1,6 +1,6 @@
 project: 
-  title: &project_title alphasocket/dockerized-toolbox
-  codename: &project_codename toolbox
+  title: &project_title alphasocket/dockerized-toolbox-alpine
+  codename: &project_codename toolbox-alpine
   description: All required cli in one container
 
 #

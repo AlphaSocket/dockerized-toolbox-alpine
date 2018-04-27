@@ -31,12 +31,12 @@ fi
 #
 # RE-TAG the dev image to prd usr
 #
-docker tag 03192859189254/toolbox:latest \
-    alphasocket/toolbox:latest;
+docker tag 03192859189254/toolbox-alpine:latest \
+    alphasocket/toolbox-alpine:latest;
 
 #
 # PUSH
 #
 echo "#\n# Pushing image\n#\n"
-docker push docker.io/alphasocket/toolbox:latest;
+docker push docker.io/alphasocket/toolbox-alpine:latest;
 exit $?
