@@ -22,7 +22,8 @@ MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/magec
 curl -fsSL https://github.com/punkstar/mageconfigsync/releases/download/$MAGECONFIGSYNC_LATEST/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o $BUILD_PATHS_BINARIES_FOLDER/mageconfigsync.phar
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 curl -fsSL https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_LATEST/bin/linux/amd64/kubectl -o $BUILD_PATHS_BINARIES_FOLDER/kubectl
-curl -fsSL https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/minikube
+MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
+curl -fsSL https://storage.googleapis.com/minikube/releases/$MINIKUBE_LATEST/minikube-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/minikube
 KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )
 curl -fsSL https://github.com/kubernetes/kops/releases/download/$KOPS_LATEST/kops-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/kops
 ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
