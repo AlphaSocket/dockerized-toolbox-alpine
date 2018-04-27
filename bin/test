@@ -42,7 +42,7 @@ while ! eval "$TEST_CONDITION"; do if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BRE
 # Testing binaries
 echo "### Testing binaries..."
 docker exec $TEST_CONTAINER_MAIN_ID n98-magerun.phar
-docker exec $TEST_CONTAINER_MAIN_ID kubectl --version
+docker exec $TEST_CONTAINER_MAIN_ID kubectl version
 
 
 
