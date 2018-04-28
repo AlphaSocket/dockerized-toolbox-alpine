@@ -26,7 +26,7 @@ setup:
       #php7_2: php@php7_2 php-curl@php7_2 php-dom@php7_2 php-gd@php7_2 php-gettext@php7_2 php-iconv@php7_2 php-json@php7_2 php-mbstring@php7_2 php-mysqli@php7_2 php-opcache@php7_2 php-openssl@php7_2 php-pdo@php7_2 php-pdo_dblib@php7_2 php-pdo_mysql@php7_2 php-pdo_pgsql@php7_2 php-pdo_sqlite@php7_2 php-pear@php7_2 php-pgsql@php7_2 php-phar@php7_2 php-phpdbg@php7_2 php-posix@php7_2 php-session@php7_2 php-soap@php7_2 php-sockets@php7_2 php-sqlite3@php7_2 php-xml@php7_2 php-zip@php7_2 php-zlib@php7_2 
       php: php7 php7-curl php7-dom php7-gd php7-ctype php7-gettext php7-iconv php7-json php7-mbstring php7-mcrypt php7-mysqli php7-opcache php7-openssl php7-pdo php7-pdo_dblib php7-pdo_mysql php7-pdo_pgsql php7-pdo_sqlite php7-pear php7-pgsql php7-phar php7-posix php7-session php7-soap php7-sockets php7-sqlite3 php7-xml php7-zip php7-zlib
       runtime:
-        valueFromParse: bash htop git mysql-client fcgi nodejs nodejs-npm python python3 py-pip $SETUP_DEPENDENCIES_PHP
+        valueFromParse: bash libc6-compat unzip jq htop git gnupg man man-pages mysql-client fcgi nodejs nodejs-npm python python3 py-pip $SETUP_DEPENDENCIES_PHP
   processes:
     #- title: "Setup repository"
     #  commands:
@@ -71,9 +71,9 @@ setup:
         
         # OnePassword
         - mkdir /tmp/op
-        - curl -fsSL https://cache.agilebits.com/dist/1P/op/pkg/v0.4/op_linux_amd64_v0.4.zip -o /tmp/op/op_linux_amd64_v0.4.zip
-        - unzip /tmp/op/op_linux_amd64_v0.4.zip -d /tmp/op
-        - mv /tmp/op/op $BUILD_PATHS_BINARIES_FOLDER/op
+        - curl -fsSL https://cache.agilebits.com/dist/1P/op/pkg/v0.4/op_linux_amd64_v0.4.zip -o /tmp/op/op.zip
+        - unzip /tmp/op/op.zip -d /tmp/op
+        - mv /tmp/op/op /usr/local/bin/op
         - rm -r /tmp/op
         
         # Op

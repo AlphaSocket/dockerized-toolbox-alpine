@@ -29,9 +29,9 @@ curl -fsSL https://github.com/kubernetes/kops/releases/download/$KOPS_LATEST/kop
 ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
 curl -fsSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/argo
 mkdir /tmp/op
-curl -fsSL https://cache.agilebits.com/dist/1P/op/pkg/v0.4/op_linux_amd64_v0.4.zip -o /tmp/op/op_linux_amd64_v0.4.zip
-unzip /tmp/op/op_linux_amd64_v0.4.zip -d /tmp/op
-mv /tmp/op/op $BUILD_PATHS_BINARIES_FOLDER/op
+curl -fsSL https://cache.agilebits.com/dist/1P/op/pkg/v0.4/op_linux_amd64_v0.4.zip -o /tmp/op/op.zip
+unzip /tmp/op/op.zip -d /tmp/op
+mv /tmp/op/op /usr/local/bin/op
 rm -r /tmp/op
 chmod -R +x /usr/local/bin
 

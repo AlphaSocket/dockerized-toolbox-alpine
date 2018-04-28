@@ -15,8 +15,14 @@ All required cli in one container
 ## Packages installed
 - Runtime dependencies:
   + bash
+  + libc6-compat
+  + unzip
+  + jq
   + htop
   + git
+  + gnupg
+  + man
+  + man-pages
   + mysql-client
   + fcgi
   + nodejs
