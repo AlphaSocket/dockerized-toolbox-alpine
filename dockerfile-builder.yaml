@@ -75,9 +75,9 @@ setup:
         - curl -fsSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/argo
         
         # Cluster management
-        - git -C /usr/lib clone https://github.com/Alphasocket/kubeadm-dind-cluster
-        - ln -s /usr/lib/kubeadm-dind-cluster/dind-cluster.sh $BUILD_PATHS_BINARIES_FOLDER/dind-cluster.sh
-        - ln -s /usr/lib/kubeadm-dind-cluster/clusterctl $BUILD_PATHS_BINARIES_FOLDER/clusterctl
+        - git -C /usr/local/lib/ clone https://github.com/Alphasocket/kubeadm-dind-cluster
+        - ln -s /usr/local/lib/kubeadm-dind-cluster/dind-cluster.sh $BUILD_PATHS_BINARIES_FOLDER/dind-cluster.sh
+        - ln -s /usr/local/lib/kubeadm-dind-cluster/clusterctl $BUILD_PATHS_BINARIES_FOLDER/clusterctl
         
         # OnePassword
         - mkdir /tmp/op
