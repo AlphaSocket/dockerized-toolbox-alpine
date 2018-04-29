@@ -45,7 +45,7 @@ pull_image(){
 }
 
 init_container(){
-    docker rm "$CONTAINER_NAME" --force &> /dev/null || true 
+    remove_container
     pull_image
 	[[ $PRIVILIGED = 1 ]] && CONTAINER_USER="--privileged" || CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 	docker run $CONTAINER_MODE $CONTAINER_USER --name "$CONTAINER_NAME" --net host -v $HOME:$HOME -e HOME=$HOME -w $HOME $CONTAINER_IMAGE "$CONTAINER_COMMAND"
@@ -67,6 +67,14 @@ exec_command(){
     if [ $RUNNING = 0 ]; then
         stop_container
     fi
+}
+
+remove_container(){
+    if [ $RUNNING = 1 ]; then
+        docker stop "$CONTAINER_NAME" 
+    fi
+    docker rm "$CONTAINER_NAME" --force &> /dev/null || true 
+    
 }
 
 run_container(){
@@ -116,6 +124,14 @@ main(){
                 status_container
             else
                 log "Toolbox not running"
+            fi
+            ;;
+        clean)
+            remove_container
+            if [ $RUNNING = 1 ]; then
+                log "Stopped and removed Toolbox container"
+            else
+                log "Removed Toolbox container"
             fi
             ;;
         stop)
