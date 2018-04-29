@@ -23,10 +23,15 @@ setup:
   # Setup env 
   envvars:
     dependencies:
+      utilities: bash unzip jq htop git gnupg man man-pages fcgi py-pip
+      op: libc6-compat
       #php7_2: php@php7_2 php-curl@php7_2 php-dom@php7_2 php-gd@php7_2 php-gettext@php7_2 php-iconv@php7_2 php-json@php7_2 php-mbstring@php7_2 php-mysqli@php7_2 php-opcache@php7_2 php-openssl@php7_2 php-pdo@php7_2 php-pdo_dblib@php7_2 php-pdo_mysql@php7_2 php-pdo_pgsql@php7_2 php-pdo_sqlite@php7_2 php-pear@php7_2 php-pgsql@php7_2 php-phar@php7_2 php-phpdbg@php7_2 php-posix@php7_2 php-session@php7_2 php-soap@php7_2 php-sockets@php7_2 php-sqlite3@php7_2 php-xml@php7_2 php-zip@php7_2 php-zlib@php7_2 
       php: php7 php7-curl php7-dom php7-gd php7-ctype php7-gettext php7-iconv php7-json php7-mbstring php7-mcrypt php7-mysqli php7-opcache php7-openssl php7-pdo php7-pdo_dblib php7-pdo_mysql php7-pdo_pgsql php7-pdo_sqlite php7-pear php7-pgsql php7-phar php7-posix php7-session php7-soap php7-sockets php7-sqlite3 php7-xml php7-zip php7-zlib
+      node: nodejs nodejs-npm
+      python: python python3
+      db: mysql-client redis 
       runtime:
-        valueFromParse: bash libc6-compat unzip jq htop git gnupg man man-pages mysql-client fcgi nodejs nodejs-npm python python3 py-pip $SETUP_DEPENDENCIES_PHP
+        valueFromParse: $SETUP_DEPENDENCIES_UTILITIES $SETUP_DEPENDENCIES_OP $SETUP_DEPENDENCIES_PHP $SETUP_DEPENDENCIES_NODE $SETUP_DEPENDENCIES_PYTHON $SETUP_DEPENDENCIES_DB
   processes:
     #- title: "Setup repository"
     #  commands:
@@ -60,14 +65,19 @@ setup:
         - KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
         - curl -fsSL https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_LATEST/bin/linux/amd64/kubectl -o $BUILD_PATHS_BINARIES_FOLDER/kubectl
         
-        - MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
-        - curl -fsSL https://storage.googleapis.com/minikube/releases/$MINIKUBE_LATEST/minikube-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/minikube
+        #- MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
+        #- curl -fsSL https://storage.googleapis.com/minikube/releases/$MINIKUBE_LATEST/minikube-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/minikube
         
         - KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )
         - curl -fsSL https://github.com/kubernetes/kops/releases/download/$KOPS_LATEST/kops-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/kops
         
         - ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
         - curl -fsSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/argo
+        
+        # Cluster management
+        - git -C /usr/lib clone https://github.com/Alphasocket/kubeadm-dind-cluster
+        - ln -s /usr/lib/kubeadm-dind-cluster/dind-cluster.sh $BUILD_PATHS_BINARIES_FOLDER/dind-cluster.sh
+        - ln -s /usr/lib/kubeadm-dind-cluster/clusterctl $BUILD_PATHS_BINARIES_FOLDER/clusterctl
         
         # OnePassword
         - mkdir /tmp/op

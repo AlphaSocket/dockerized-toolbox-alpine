@@ -15,7 +15,6 @@ All required cli in one container
 ## Packages installed
 - Runtime dependencies:
   + bash
-  + libc6-compat
   + unzip
   + jq
   + htop
@@ -23,13 +22,9 @@ All required cli in one container
   + gnupg
   + man
   + man-pages
-  + mysql-client
   + fcgi
-  + nodejs
-  + nodejs-npm
-  + python
-  + python3
   + py-pip
+  + libc6-compat
   + php7
   + php7-curl
   + php7-dom
@@ -59,6 +54,12 @@ All required cli in one container
   + php7-xml
   + php7-zip
   + php7-zlib
+  + nodejs
+  + nodejs-npm
+  + python
+  + python3
+  + mysql-client
+  + redis
 
 
 ## Configurable envvars
