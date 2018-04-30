@@ -11,8 +11,14 @@ set -e
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
 
+DOCKER_BIN_PATH=$(which docker 2> /dev/null)
+DOCKER_SOCKET_PATH=${DOCKER_SOCKET_PATH:/var/run/docker.sock}
+#DOCKER_VOLUMES=" -v $DOCKER_BIN_PATH:/usr/bin/docker -v $DOCKER_SOCKET_PATH:/var/run/docker.sock -v /usr/lib/x86_64-linux-gnu/libltdl.so.7:/usr/lib/libltdl.so.7 "
+DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:/var/run/docker.sock"
+
 PRIVILIGED=0
 CONTAINER_NAME="toolbox"
+CONTAINER_VOLUMES=" -v $HOME:$HOME $DOCKER_VOLUMES "
 CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
 CONTAINER_COMMAND="sleep 999999"
 
@@ -26,7 +32,7 @@ err() {
 }
 
 initialize(){
-    if [ -z $( which docker ) ]; then
+    if [ -z "$DOCKER_BIN_PATH" ]; then
         err "Docker client not found"
         exit 1
     fi
@@ -48,12 +54,13 @@ init_container(){
     remove_container
     pull_image
 	[[ $PRIVILIGED = 1 ]] && CONTAINER_USER="--privileged" || CONTAINER_USER="-u $USER_ID:$GROUP_ID"
-	docker run $CONTAINER_MODE $CONTAINER_USER --name "$CONTAINER_NAME" --net host -v $HOME:$HOME -e HOME=$HOME -w $HOME $CONTAINER_IMAGE "$CONTAINER_COMMAND"
+	docker run $CONTAINER_MODE $CONTAINER_USER --name "$CONTAINER_NAME" --net host $CONTAINER_VOLUMES -e HOME=$HOME -w $HOME $CONTAINER_IMAGE "$CONTAINER_COMMAND"
 }
 
 start_daemon(){
 	CONTAINER_MODE="-d"
 	init_container
+    sleep 1
 }
 
 exec_command(){
@@ -132,6 +139,15 @@ main(){
                 log "Stopped and removed Toolbox container"
             else
                 log "Removed Toolbox container"
+            fi
+            ;;
+        update)
+            pull_image
+            if [ $RUNNING = 1 ]; then
+                stop_container
+                remove_container
+                run_container
+                log "Updated Toolbox"
             fi
             ;;
         stop)
