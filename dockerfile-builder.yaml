@@ -9,6 +9,7 @@ project:
 #
 build:
   envvars:
+    from: docker:dind
     name: *project_codename
     cmd: "sleep 999"
     # Varni
