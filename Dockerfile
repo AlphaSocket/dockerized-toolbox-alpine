@@ -1,7 +1,7 @@
 #
 # Do not change content here, image automatically built
 #
-FROM alpine:latest
+FROM docker:dind
 
 ARG BUILD_COMMIT
 ARG BUILD_DATE
@@ -23,10 +23,10 @@ ENV \
 	BUILD_BRANCH="latest" \
 	BUILD_VERSION="latest" \
 	BUILD_ENV="prd" \
-	BUILD_FROM="alpine:latest" \
 	BUILD_FAMILY="alpine" \
 	BUILD_PORTS_MAIN="" \
 	BUILD_PORTS_ADDITIONAL="" \
+	BUILD_FROM="docker:dind" \
 	BUILD_NAME="toolbox-alpine" \
 	BUILD_CMD="sleep 999" \
 	BUILD_PATHS_BINARIES_FOLDER="/usr/local/bin" \
@@ -59,13 +59,13 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-run /usr/local/bin/docker-run
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1525044815
-ADD imports/bin/config /usr/local/bin/config/1525044815
+ADD imports/bin/setup /usr/local/bin/setup/1525086846
+ADD imports/bin/config /usr/local/bin/config/1525086846
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1525044815 1>/dev/stdout 2>/dev/stderr
+    /usr/local/bin/setup/1525086846 1>/dev/stdout 2>/dev/stderr
 
 
 
