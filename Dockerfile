@@ -59,13 +59,13 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-run /usr/local/bin/docker-run
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1525086846
-ADD imports/bin/config /usr/local/bin/config/1525086846
+ADD imports/bin/setup /usr/local/bin/setup/1525129253
+ADD imports/bin/config /usr/local/bin/config/1525129254
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1525086846 1>/dev/stdout 2>/dev/stderr
+    /usr/local/bin/setup/1525129253 1>/dev/stdout 2>/dev/stderr
 
 
 
