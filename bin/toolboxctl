@@ -9,16 +9,16 @@
 set -e
 
 USER_ID=$(id -u)
-GROUP_ID=$(id -g)
+GROUP_ID=$(cut -d: -f3 < <(getent group docker))
 
 DOCKER_BIN_PATH=$(which docker 2> /dev/null)
-DOCKER_SOCKET_PATH=${DOCKER_SOCKET_PATH:/var/run/docker.sock}
-#DOCKER_VOLUMES=" -v $DOCKER_BIN_PATH:/usr/bin/docker -v $DOCKER_SOCKET_PATH:/var/run/docker.sock -v /usr/lib/x86_64-linux-gnu/libltdl.so.7:/usr/lib/libltdl.so.7 "
-DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:/var/run/docker.sock"
+DOCKER_SOCKET_PATH="${DOCKER_SOCKET_PATH:-/var/run/docker.sock}"
+DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:/var/run/docker.sock "
 
-PRIVILIGED=0
+CONTAINER_RUN_AS_PRIVILIGED=${CONTAINER_RUN_AS_PRIVILIGED:0}
 CONTAINER_NAME="toolbox"
 CONTAINER_VOLUMES=" -v $HOME:$HOME $DOCKER_VOLUMES "
+CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
 CONTAINER_COMMAND="sleep 999999"
 
@@ -31,52 +31,50 @@ err() {
   echo -ne "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@\n" >&2
 }
 
-initialize(){
+#
+# Toolbox
+#
+
+function toolboxctl::initialize(){
     if [ -z "$DOCKER_BIN_PATH" ]; then
         err "Docker client not found"
         exit 1
     fi
 }
 
-destroy(){
+function toolboxctl::destroy(){
     exit 0
 }
 
-#
-#
-#
 
-pull_image(){
+function toolboxctl::pull_image(){
 	docker pull $CONTAINER_IMAGE
 }
 
-init_container(){
-    remove_container
-    pull_image
-	[[ $PRIVILIGED = 1 ]] && CONTAINER_USER="--privileged" || CONTAINER_USER="-u $USER_ID:$GROUP_ID"
-	docker run $CONTAINER_MODE $CONTAINER_USER --name "$CONTAINER_NAME" --net host $CONTAINER_VOLUMES -e HOME=$HOME -w $HOME $CONTAINER_IMAGE "$CONTAINER_COMMAND"
+function toolboxctl::init_container(){
+    toolboxctl::remove_container
+    toolboxctl::pull_image
+	[[ $CONTAINER_RUN_AS_PRIVILIGED = 1 ]] && CONTAINER_USER="--privileged"
+	docker run $CONTAINER_MODE $CONTAINER_USER --name "$CONTAINER_NAME" --net host $CONTAINER_VOLUMES -e HOME=$HOME -w $PWD $CONTAINER_IMAGE "$CONTAINER_COMMAND"
 }
 
-start_daemon(){
+function toolboxctl::start_daemon(){
 	CONTAINER_MODE="-d"
-	init_container
-    sleep 1
+	toolboxctl::init_container
 }
 
-exec_command(){
-    if [ $RUNNING = 0 ]; then
-        start_daemon
-    fi
-    
+function toolboxctl::exec_command(){
 	CONTAINER_MODE="-it"
-    docker exec $CONTAINER_MODE $CONTAINER_NAME $@
+    CONTAINER_COMMAND=$@
     
     if [ $RUNNING = 0 ]; then
-        stop_container
+        init_container
+    else
+        docker exec $CONTAINER_MODE $CONTAINER_USER "$CONTAINER_NAME" $CONTAINER_COMMAND
     fi
 }
 
-remove_container(){
+function toolboxctl::remove_container(){
     if [ $RUNNING = 1 ]; then
         docker stop "$CONTAINER_NAME" 
     fi
@@ -84,27 +82,27 @@ remove_container(){
     
 }
 
-run_container(){
+function toolboxctl::run_container(){
 	CONTAINER_COMMAND="bash"
 	exec_command $CONTAINER_COMMAND
 }
 
-status_container(){
+function toolboxctl::status_container(){
 	docker ps -f "name=$CONTAINER_NAME"
 }
 
-stop_container(){
-	docker stop -t 0 $CONTAINER_NAME
+function toolboxctl::stop_container(){
+	docker stop -t 0 $CONTAINER_NAME 1> /dev/null
 }
 
-kill_container(){
+function toolboxctl::kill_container(){
 	docker kill $CONTAINER_NAME
 }
 
-main(){
-    initialize
+function toolboxctl::main(){
+    toolboxctl::initialize
     
-    if [ $(docker ps -f "name=$CONTAINER_NAME" --format '{{.Names}}' | grep -c $CONTAINER_NAME ) = 1 ] ; then
+    if [ $(docker ps -f "name=$CONTAINER_NAME" --format '{{.Names}}' | grep -c $CONTAINER_NAME ) = 1 ]; then
         RUNNING=1
     else
         RUNNING=0
@@ -115,26 +113,26 @@ main(){
             if [ $RUNNING = 1 ]; then
                 log "Toolbox already running"
             else
-                start_daemon
+                toolboxctl::start_daemon
                 log "Toolbox started"
             fi
             ;;
         restart)
-            start_daemon
+            toolboxctl::start_daemon
             log "Toolbox started"
             ;;
         run)
-            run_container
+            toolboxctl::run_container
             ;;
         status)
             if [ $RUNNING = 1 ]; then
-                status_container
+                toolboxctl::status_container
             else
                 log "Toolbox not running"
             fi
             ;;
         clean)
-            remove_container
+            toolboxctl::remove_container
             if [ $RUNNING = 1 ]; then
                 log "Stopped and removed Toolbox container"
             else
@@ -142,17 +140,17 @@ main(){
             fi
             ;;
         update)
-            pull_image
+            toolboxctl::pull_image
             if [ $RUNNING = 1 ]; then
-                stop_container
-                remove_container
-                run_container
+                toolboxctl::stop_container
+                toolboxctl::run_container
                 log "Updated Toolbox"
             fi
             ;;
         stop)
             if [ $RUNNING = 1 ]; then
-                stop_container
+                toolboxctl::stop_container
+                log "Toolbox stopped"
             else
                 err "Toolbox not running"
                 exit 1
@@ -160,7 +158,7 @@ main(){
             ;;
         kill)
             if [ $RUNNING = 1 ]; then
-                kill_container
+                toolboxctl::kill_container
             else
                 err "Toolbox not running"
                 exit 1
@@ -168,7 +166,7 @@ main(){
             ;;
         exec)
             shift
-            exec_command $@
+            toolboxctl::exec_command $@
             ;;
         --)
             shift
@@ -180,7 +178,7 @@ main(){
             ;;
     esac
     
-    destroy
+    toolboxctl::destroy
 }
 
-main $@
+toolboxctl::main $@
