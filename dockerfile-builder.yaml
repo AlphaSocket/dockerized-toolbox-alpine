@@ -75,8 +75,8 @@ setup:
         
         - MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
         - curl -fsSL https://github.com/punkstar/mageconfigsync/releases/download/$MAGECONFIGSYNC_LATEST/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o $BUILD_PATHS_BINARIES_FOLDER/mageconfigsync.phar
-        - pip install mwscan
-        
+        - pip install yara-python mwscan
+      
         # Docker
         - pip install docker-compose
         - curl -fsSL https://moncho.github.io/dry/dryup.sh -o $BUILD_PATHS_BINARIES_FOLDER/dry
