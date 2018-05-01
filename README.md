@@ -13,6 +13,9 @@ All required cli in one container
 
 
 ## Packages installed
+- Setup dependencies:
+  + gcc
+  + python-dev
 - Runtime dependencies:
   + bash
   + unzip
