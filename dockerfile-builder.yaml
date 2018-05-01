@@ -24,6 +24,7 @@ setup:
   # Setup env 
   envvars:
     dependencies:
+      setup: gcc
       utilities: bash unzip jq htop git mercurial gnupg man man-pages fcgi py-pip py-psutil
       op: libc6-compat
       #php7_2: php@php7_2 php-curl@php7_2 php-dom@php7_2 php-gd@php7_2 php-gettext@php7_2 php-iconv@php7_2 php-json@php7_2 php-mbstring@php7_2 php-mysqli@php7_2 php-opcache@php7_2 php-openssl@php7_2 php-pdo@php7_2 php-pdo_dblib@php7_2 php-pdo_mysql@php7_2 php-pdo_pgsql@php7_2 php-pdo_sqlite@php7_2 php-pear@php7_2 php-pgsql@php7_2 php-phar@php7_2 php-phpdbg@php7_2 php-posix@php7_2 php-session@php7_2 php-soap@php7_2 php-sockets@php7_2 php-sqlite3@php7_2 php-xml@php7_2 php-zip@php7_2 php-zlib@php7_2 
