@@ -57,7 +57,6 @@ All required cli in one container
   + nodejs
   + nodejs-npm
   + python
-  + python-dev
   + python3
   + py-pip
   + mysql-client
