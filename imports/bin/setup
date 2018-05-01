@@ -8,6 +8,7 @@ apk add --no-cache curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $SETUP
 
 # Install extra binaries
 echo "### Install extra binaries..."
+pip install --upgrade pip
 pip install mercurial
 curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
 mkdir /tmp/hgflow
