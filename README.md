@@ -15,6 +15,17 @@ All required cli in one container
 ## Packages installed
 - Setup dependencies:
   + gcc
+  + py-setuptools
+  + openssl-dev
+  + jansson-dev
+  + python-dev
+  + build-base
+  + libc-dev
+  + file-dev
+  + automake
+  + autoconf
+  + libtool
+  + flex
 - Runtime dependencies:
   + bash
   + unzip
