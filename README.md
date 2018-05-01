@@ -58,8 +58,12 @@ All required cli in one container
   + nodejs-npm
   + python
   + python3
+  + py-pip
   + mysql-client
   + redis
+  + py-crcmod
+  + libc6-compat
+  + openssh-client
 
 
 ## Configurable envvars

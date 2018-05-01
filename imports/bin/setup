@@ -8,6 +8,16 @@ apk add --no-cache curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $SETUP
 
 # Install extra binaries
 echo "### Install extra binaries..."
+pip install mercurial
+curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
+mkdir /tmp/hgflow
+tar -xvjf /tmp/hgflow-installer.tar.bz2 -C /tmp/hgflow/
+mv /tmp/hgflow/hgflow.py $BUILD_PATHS_BINARIES_FOLDER/hgflow.py
+rm -rf /tmp/hgflow
+curl -fsSL https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -o /tmp/gitflow-installer.sh
+chmod +x /tmp/gitflow-installer.sh
+/tmp/gitflow-installer.sh
+rm /tmp/gitflow-installer.sh
 curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
 chmod +x $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
 curl -fsSL https://phar.phpunit.de/phpunit.phar -o $BUILD_PATHS_BINARIES_FOLDER/phpunit.phar
@@ -20,6 +30,17 @@ curl -fsSL https://files.magerun.net/n98-magerun-latest.phar -o $BUILD_PATHS_BIN
 curl -fsSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o $BUILD_PATHS_BINARIES_FOLDER/modman
 MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
 curl -fsSL https://github.com/punkstar/mageconfigsync/releases/download/$MAGECONFIGSYNC_LATEST/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o $BUILD_PATHS_BINARIES_FOLDER/mageconfigsync.phar
+pip install mwscan
+pip install docker-compose
+curl -fsSL https://moncho.github.io/dry/dryup.sh -o $BUILD_PATHS_BINARIES_FOLDER/dry
+pip install awscli
+CLOUD_SDK_VERSION='199.0.0'
+mkdir /tmp/gcloud/
+curl -fsSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz -o /tmp/gcloud/gcloud.tar.gz
+tar -xzf /tmp/gcloud/gcloud.tar.gz -C /tmp/gcloud/
+mv /tmp/gcloud/google-cloud-sdk/bin/gcloud $BUILD_PATHS_BINARIES_FOLDER/gcloud
+rm /tmp/gcloud/ -rf
+ln -s /lib /lib64
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 curl -fsSL https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_LATEST/bin/linux/amd64/kubectl -o $BUILD_PATHS_BINARIES_FOLDER/kubectl
 KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )

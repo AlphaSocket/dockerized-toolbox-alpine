@@ -29,10 +29,11 @@ setup:
       #php7_2: php@php7_2 php-curl@php7_2 php-dom@php7_2 php-gd@php7_2 php-gettext@php7_2 php-iconv@php7_2 php-json@php7_2 php-mbstring@php7_2 php-mysqli@php7_2 php-opcache@php7_2 php-openssl@php7_2 php-pdo@php7_2 php-pdo_dblib@php7_2 php-pdo_mysql@php7_2 php-pdo_pgsql@php7_2 php-pdo_sqlite@php7_2 php-pear@php7_2 php-pgsql@php7_2 php-phar@php7_2 php-phpdbg@php7_2 php-posix@php7_2 php-session@php7_2 php-soap@php7_2 php-sockets@php7_2 php-sqlite3@php7_2 php-xml@php7_2 php-zip@php7_2 php-zlib@php7_2 
       php: php7 php7-curl php7-dom php7-gd php7-ctype php7-gettext php7-iconv php7-json php7-mbstring php7-mcrypt php7-mysqli php7-opcache php7-openssl php7-pdo php7-pdo_dblib php7-pdo_mysql php7-pdo_pgsql php7-pdo_sqlite php7-pear php7-pgsql php7-phar php7-posix php7-session php7-soap php7-sockets php7-sqlite3 php7-xml php7-zip php7-zlib
       node: nodejs nodejs-npm
-      python: python python3
-      db: mysql-client redis 
+      python: python python3 py-pip
+      db: mysql-client redis
+      google: py-crcmod libc6-compat openssh-client
       runtime:
-        valueFromParse: $SETUP_DEPENDENCIES_UTILITIES $SETUP_DEPENDENCIES_OP $SETUP_DEPENDENCIES_PHP $SETUP_DEPENDENCIES_NODE $SETUP_DEPENDENCIES_PYTHON $SETUP_DEPENDENCIES_DB
+        valueFromParse: $SETUP_DEPENDENCIES_UTILITIES $SETUP_DEPENDENCIES_OP $SETUP_DEPENDENCIES_PHP $SETUP_DEPENDENCIES_NODE $SETUP_DEPENDENCIES_PYTHON $SETUP_DEPENDENCIES_DB $SETUP_DEPENDENCIES_GOOGLE
   processes:
     #- title: "Setup repository"
     #  commands:
@@ -42,7 +43,18 @@ setup:
         
     - title: "Install extra binaries"
       commands:
-        # Git
+        # vcs
+        - pip install mercurial
+        - curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
+        - mkdir /tmp/hgflow
+        - tar -xvjf /tmp/hgflow-installer.tar.bz2 -C /tmp/hgflow/
+        - mv /tmp/hgflow/hgflow.py $BUILD_PATHS_BINARIES_FOLDER/hgflow.py
+        - rm -rf /tmp/hgflow
+        
+        - curl -fsSL https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -o /tmp/gitflow-installer.sh
+        - chmod +x /tmp/gitflow-installer.sh
+        - /tmp/gitflow-installer.sh
+        - rm /tmp/gitflow-installer.sh
         - curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
         - chmod +x $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
         
@@ -56,11 +68,26 @@ setup:
         - curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o $BUILD_PATHS_BINARIES_FOLDER/wp-cli.phar
         # Magento
         - curl -fsSL https://files.magerun.net/n98-magerun-latest.phar -o $BUILD_PATHS_BINARIES_FOLDER/n98-magerun.phar
-        
         - curl -fsSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o $BUILD_PATHS_BINARIES_FOLDER/modman
         
         - MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
         - curl -fsSL https://github.com/punkstar/mageconfigsync/releases/download/$MAGECONFIGSYNC_LATEST/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o $BUILD_PATHS_BINARIES_FOLDER/mageconfigsync.phar
+        - pip install mwscan
+        
+        # Docker
+        - pip install docker-compose
+        - curl -fsSL https://moncho.github.io/dry/dryup.sh -o $BUILD_PATHS_BINARIES_FOLDER/dry
+        
+        # Clouds
+        - pip install awscli
+        
+        - CLOUD_SDK_VERSION='199.0.0'
+        - mkdir /tmp/gcloud/
+        - curl -fsSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz -o /tmp/gcloud/gcloud.tar.gz
+        - tar -xzf /tmp/gcloud/gcloud.tar.gz -C /tmp/gcloud/
+        - mv /tmp/gcloud/google-cloud-sdk/bin/gcloud $BUILD_PATHS_BINARIES_FOLDER/gcloud
+        - rm /tmp/gcloud/ -rf
+        - ln -s /lib /lib64
         
         # Kubernetes
         - KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
@@ -89,9 +116,21 @@ setup:
         
         # Op
         - chmod -R +x /usr/local/bin
-
+        
+        
+config:
+  processes:
+    #
+    # Conf
+    #
+    - title: "Configurations"
+      commands:
+        - gcloud config set core/disable_usage_reporting true
+        - gcloud config set component_manager/disable_update_check true
+        - gcloud config set metrics/environment github_docker_image
+        
 #
-# Config process run just before the entrypoint
+# Test
 #
 test:
   processes:
