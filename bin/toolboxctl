@@ -68,7 +68,7 @@ function toolboxctl::exec_command(){
     CONTAINER_COMMAND=$@
     
     if [ $RUNNING = 0 ]; then
-        init_container
+        toolboxctl::init_container
     else
         docker exec $CONTAINER_MODE $CONTAINER_USER "$CONTAINER_NAME" $CONTAINER_COMMAND
     fi
@@ -84,7 +84,7 @@ function toolboxctl::remove_container(){
 
 function toolboxctl::run_container(){
 	CONTAINER_COMMAND="bash"
-	exec_command $CONTAINER_COMMAND
+	toolboxctl::exec_command $CONTAINER_COMMAND
 }
 
 function toolboxctl::status_container(){
