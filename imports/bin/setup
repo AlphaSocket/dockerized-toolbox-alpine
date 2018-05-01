@@ -30,7 +30,7 @@ curl -fsSL https://files.magerun.net/n98-magerun-latest.phar -o $BUILD_PATHS_BIN
 curl -fsSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o $BUILD_PATHS_BINARIES_FOLDER/modman
 MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
 curl -fsSL https://github.com/punkstar/mageconfigsync/releases/download/$MAGECONFIGSYNC_LATEST/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o $BUILD_PATHS_BINARIES_FOLDER/mageconfigsync.phar
-pip install yara-python mwscan
+pip install mwscan
 pip install docker-compose
 curl -fsSL https://moncho.github.io/dry/dryup.sh -o $BUILD_PATHS_BINARIES_FOLDER/dry
 pip install awscli
