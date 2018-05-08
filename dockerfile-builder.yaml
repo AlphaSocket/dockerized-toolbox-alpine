@@ -133,7 +133,7 @@ setup:
         - mkdir /tmp/browserstack
         - curl -fsSL https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip -o /tmp/browserstack/BrowserStackLocal.zip
         - unzip /tmp/browserstack/BrowserStackLocal.zip -d /tmp/browserstack
-        - mv /tmp/browserstack/op /usr/local/bin/BrowserStackLocal
+        - mv /tmp/browserstack/BrowserStackLocal /usr/local/bin/BrowserStackLocal
         - rm -r /tmp/browserstack
         
         # Mysql
