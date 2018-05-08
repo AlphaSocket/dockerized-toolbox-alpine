@@ -70,7 +70,7 @@ function toolboxctl::exec_command(){
     if [ $RUNNING = 0 ]; then
         toolboxctl::init_container
     else
-        docker exec $CONTAINER_MODE $CONTAINER_USER "$CONTAINER_NAME" $CONTAINER_COMMAND
+        docker exec $CONTAINER_MODE $CONTAINER_USER -e HOME=$HOME -w $PWD "$CONTAINER_NAME" $CONTAINER_COMMAND
     fi
 }
 

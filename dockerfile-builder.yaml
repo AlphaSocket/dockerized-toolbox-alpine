@@ -14,6 +14,7 @@ build:
     cmd: "sleep 999"
     # Varni
     paths:
+      bash_completitions: $HOME/.bash_completion.d
       binaries:
         folder: /usr/local/bin
 
@@ -25,12 +26,12 @@ setup:
   envvars:
     dependencies:
       setup: gcc py-setuptools openssl-dev jansson-dev python-dev build-base libc-dev file-dev automake autoconf libtool flex
-      utilities: bash unzip jq htop git mercurial gnupg man man-pages fcgi py-pip py-psutil
+      utilities: bash unzip jq htop git mercurial gnupg man man-pages fcgi py-pip ansible py-psutil
       op: libc6-compat
       #php7_2: php@php7_2 php-curl@php7_2 php-dom@php7_2 php-gd@php7_2 php-gettext@php7_2 php-iconv@php7_2 php-json@php7_2 php-mbstring@php7_2 php-mysqli@php7_2 php-opcache@php7_2 php-openssl@php7_2 php-pdo@php7_2 php-pdo_dblib@php7_2 php-pdo_mysql@php7_2 php-pdo_pgsql@php7_2 php-pdo_sqlite@php7_2 php-pear@php7_2 php-pgsql@php7_2 php-phar@php7_2 php-phpdbg@php7_2 php-posix@php7_2 php-session@php7_2 php-soap@php7_2 php-sockets@php7_2 php-sqlite3@php7_2 php-xml@php7_2 php-zip@php7_2 php-zlib@php7_2 
       php: php7 php7-curl php7-dom php7-gd php7-ctype php7-gettext php7-iconv php7-json php7-mbstring php7-mcrypt php7-mysqli php7-opcache php7-openssl php7-pdo php7-pdo_dblib php7-pdo_mysql php7-pdo_pgsql php7-pdo_sqlite php7-pear php7-pgsql php7-phar php7-posix php7-session php7-soap php7-sockets php7-sqlite3 php7-xml php7-zip php7-zlib
       node: nodejs nodejs-npm
-      python: python python3 py-pip
+      python: python python3 py-pip 
       db: mysql-client redis
       google: py-crcmod libc6-compat openssh-client
       runtime:
@@ -44,42 +45,49 @@ setup:
         
     - title: "Install extra binaries"
       commands:
+        # Python
         - pip install --upgrade pip
+        
         # vcs
         - curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
         - mkdir /tmp/hgflow
         - tar -xvjf /tmp/hgflow-installer.tar.bz2 -C /tmp/hgflow/
-        - mv /tmp/hgflow/hgflow.py $BUILD_PATHS_BINARIES_FOLDER/hgflow.py
+        - mv /tmp/hgflow/hgflow.py ${BUILD_PATHS_BINARIES_FOLDER}/hgflow.py
         - rm -rf /tmp/hgflow
         
         - curl -fsSL https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -o /tmp/gitflow-installer.sh
         - chmod +x /tmp/gitflow-installer.sh
         - /tmp/gitflow-installer.sh
         - rm /tmp/gitflow-installer.sh
-        - curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
-        - chmod +x $BUILD_PATHS_BINARIES_FOLDER/git-get-latest-release
+        - curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o ${BUILD_PATHS_BINARIES_FOLDER}/git-get-latest-release
+        - chmod +x ${BUILD_PATHS_BINARIES_FOLDER}/git-get-latest-release
         
         # PHP
-        - curl -fsSL https://phar.phpunit.de/phpunit.phar -o $BUILD_PATHS_BINARIES_FOLDER/phpunit.phar
-        - curl -fsSL http://static.phpmd.org/php/latest/phpmd.phar -o $BUILD_PATHS_BINARIES_FOLDER/phpmd.phar
-        - curl -fsSL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -o $BUILD_PATHS_BINARIES_FOLDER/phpcs.phar
-        - curl -fsSL http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -o $BUILD_PATHS_BINARIES_FOLDER/php-cs-fixer.phar
-        - curl -fsSL https://getcomposer.org/composer.phar -o $BUILD_PATHS_BINARIES_FOLDER/composer.phar
+        - curl -fsSL https://phar.phpunit.de/phpunit.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpunit.phar
+        - curl -fsSL http://static.phpmd.org/php/latest/phpmd.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpmd.phar
+        - curl -fsSL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpcs.phar
+        - curl -fsSL https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpcbf.phar
+        - curl -fsSL http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/php-cs-fixer.phar
+        - curl -fsSL https://getcomposer.org/composer.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/composer.phar
         
         # Wordpress
-        - curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o $BUILD_PATHS_BINARIES_FOLDER/wp-cli.phar
+        - curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/wp-cli.phar
         
         # Magento
-        - curl -fsSL https://files.magerun.net/n98-magerun-latest.phar -o $BUILD_PATHS_BINARIES_FOLDER/n98-magerun.phar
-        - curl -fsSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o $BUILD_PATHS_BINARIES_FOLDER/modman
+        - curl -fsSL https://files.magerun.net/n98-magerun-latest.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/n98-magerun.phar
+        - curl -fsSL https://raw.githubusercontent.com/mhauri/generate-modman/master/generate-modman -o ${BUILD_PATHS_BINARIES_FOLDER}/generate-modman
+        - curl -fsSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o ${BUILD_PATHS_BINARIES_FOLDER}/modman
         
         - MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
-        - curl -fsSL https://github.com/punkstar/mageconfigsync/releases/download/$MAGECONFIGSYNC_LATEST/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o $BUILD_PATHS_BINARIES_FOLDER/mageconfigsync.phar
+        - curl -fsSL https://github.com/punkstar/mageconfigsync/releases/download/${MAGECONFIGSYNC_LATEST}/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/mageconfigsync.phar
+        
+        - MAGESCAN_LATEST=$(git-get-latest-release https://github.com/steverobbins/magescan )
+        - curl -fsSL https://github.com/steverobbins/magescan/releases/download/${MAGESCAN_LATEST}/magescan.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/magescan.phar
         - pip install mwscan
       
         # Docker
         - pip install docker-compose
-        - curl -fsSL https://moncho.github.io/dry/dryup.sh -o $BUILD_PATHS_BINARIES_FOLDER/dry
+        - curl -fsSL https://moncho.github.io/dry/dryup.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
         
         # Clouds
         - pip install awscli
@@ -92,26 +100,27 @@ setup:
         
         # Kubernetes
         - KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-        - curl -fsSL https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_LATEST/bin/linux/amd64/kubectl -o $BUILD_PATHS_BINARIES_FOLDER/kubectl
+        - curl -fsSL https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_LATEST/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
         
         - HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ )
         - mkdir /tmp/helm
         - curl -fsSL https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz -o /tmp/helm/helm.tar.gz
         - tar -xvf /tmp/helm/helm.tar.gz -C /tmp/helm/
-        - mv /tmp/helm/linux-amd64/helm $BUILD_PATHS_BINARIES_FOLDER/helm
+        - mv /tmp/helm/linux-amd64/helm ${BUILD_PATHS_BINARIES_FOLDER}/helm
         
         - KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )
-        - curl -fsSL https://github.com/kubernetes/kops/releases/download/$KOPS_LATEST/kops-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/kops
+        - curl -fsSL https://github.com/kubernetes/kops/releases/download/$KOPS_LATEST/kops-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kops
         
         - ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
-        - curl -fsSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/argo
+        - curl -fsSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/argo
         
         # Cluster management
-        #- MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
-        #- curl -fsSL https://storage.googleapis.com/minikube/releases/$MINIKUBE_LATEST/minikube-linux-amd64 -o $BUILD_PATHS_BINARIES_FOLDER/minikube
+        - MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
+        - curl -fsSL https://storage.googleapis.com/minikube/releases/$MINIKUBE_LATEST/minikube-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/minikube
+        
         - git -C /usr/local/lib/ clone https://github.com/Alphasocket/kubeadm-dind-cluster
-        - ln -s /usr/local/lib/kubeadm-dind-cluster/dind-cluster.sh $BUILD_PATHS_BINARIES_FOLDER/dind-cluster.sh
-        - ln -s /usr/local/lib/kubeadm-dind-cluster/clusterctl $BUILD_PATHS_BINARIES_FOLDER/clusterctl
+        - ln -s /usr/local/lib/kubeadm-dind-cluster/dind-cluster.sh ${BUILD_PATHS_BINARIES_FOLDER}/dind-cluster.sh
+        - ln -s /usr/local/lib/kubeadm-dind-cluster/clusterctl ${BUILD_PATHS_BINARIES_FOLDER}/clusterctl
         
         # OnePassword
         - mkdir /tmp/op
@@ -120,12 +129,41 @@ setup:
         - mv /tmp/op/op /usr/local/bin/op
         - rm -r /tmp/op
         
+        # Browser stack
+        - mkdir /tmp/browserstack
+        - curl -fsSL https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip -o /tmp/browserstack/BrowserStackLocal.zip
+        - unzip /tmp/browserstack/BrowserStackLocal.zip -d /tmp/browserstack
+        - mv /tmp/browserstack/op /usr/local/bin/BrowserStackLocal
+        - rm -r /tmp/browserstack
+        
+        # Mysql
+        - curl -fsSL https://gist.githubusercontent.com/AlphaSocket/e681bc0c087e6b4e1f6d4f8881f2ac5e/raw/081d1d28dc3b352582f2b9805db46cf055d67a6e/mysql-dump-all-db-here -o ${BUILD_PATHS_BINARIES_FOLDER}/mysql-dump-all-db-here
+        
+        # NodeJs
+        - curl -fsSL https://gist.githubusercontent.com/AlphaSocket/f139f80f6fd3bf2ff155ced0b81ce616/raw/196bf78149c308fe6d687926c09e73052656dc6f/node-get-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-get-dependencies
+        - curl -fsSL https://gist.githubusercontent.com/AlphaSocket/9780449ae2e3222e580d672f9aed68ae/raw/4c9877313f45d27ebdcd66c87e602d9302e8cbbd/node-link-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-link-dependencies
+        
         # Final config
         - chmod -R +x /usr/local/bin
         
         
 config:
   processes:
+    #
+    # Bash completitions
+    #
+    - mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/
+    - curl -fsSl https://raw.githubusercontent.com/netz98/n98-magerun/master/res/autocompletion/bash/n98-magerun.phar.bash -o ${BUILD_PATHS_BASH_COMPLETITIONS}/n98-magerun
+    - curl -fsSl https://raw.githubusercontent.com/iArren/composer-bash-completion/master/composer -o ${BUILD_PATHS_BASH_COMPLETITIONS}/composer
+    - curl -fsSl https://raw.githubusercontent.com/wp-cli/wp-cli/master/utils/wp-completion.bash -o ${BUILD_PATHS_BASH_COMPLETITIONS}/wp-cli
+    - DOCKER_COMPOSE_LATEST_VERSION=$(git-get-latest-release https://github.com/docker/compose/ )
+    - https://raw.githubusercontent.com/docker/compose/${DOCKER_COMPOSE_LATEST_VERSION}/contrib/completion/bash/docker-compose -o ${BUILD_PATHS_BASH_COMPLETITIONS}/docker-compose
+    - minikube completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/minikube
+    - kubectl completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kubectl
+    - kops completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kops
+    - helm completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/helm
+    
+    
     #
     # Conf
     #

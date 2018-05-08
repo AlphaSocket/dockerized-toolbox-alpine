@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Run the command inside the toolbox
+#
+# Example:
+# 
+# ln -s ${PATH_TO_TOOLBOX}/bin/runner ~/bin/composer.phar
+#
+# composer.phar will run in toolbox
+#
+$(which toolboxctl) exec ${0##*/} $@
