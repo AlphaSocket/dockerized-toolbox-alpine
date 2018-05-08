@@ -67,7 +67,7 @@ rm -r /tmp/op
 mkdir /tmp/browserstack
 curl -fsSL https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip -o /tmp/browserstack/BrowserStackLocal.zip
 unzip /tmp/browserstack/BrowserStackLocal.zip -d /tmp/browserstack
-mv /tmp/browserstack/op /usr/local/bin/BrowserStackLocal
+mv /tmp/browserstack/BrowserStackLocal /usr/local/bin/BrowserStackLocal
 rm -r /tmp/browserstack
 curl -fsSL https://gist.githubusercontent.com/AlphaSocket/e681bc0c087e6b4e1f6d4f8881f2ac5e/raw/081d1d28dc3b352582f2b9805db46cf055d67a6e/mysql-dump-all-db-here -o ${BUILD_PATHS_BINARIES_FOLDER}/mysql-dump-all-db-here
 curl -fsSL https://gist.githubusercontent.com/AlphaSocket/f139f80f6fd3bf2ff155ced0b81ce616/raw/196bf78149c308fe6d687926c09e73052656dc6f/node-get-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-get-dependencies
