@@ -38,6 +38,7 @@ All required cli in one container
   + man-pages
   + fcgi
   + py-pip
+  + ansible
   + py-psutil
   + libc6-compat
   + php7
