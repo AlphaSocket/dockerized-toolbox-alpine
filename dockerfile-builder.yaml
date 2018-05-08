@@ -152,17 +152,18 @@ config:
     #
     # Bash completitions
     #
-    - mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/
-    - curl -fsSl https://raw.githubusercontent.com/netz98/n98-magerun/master/res/autocompletion/bash/n98-magerun.phar.bash -o ${BUILD_PATHS_BASH_COMPLETITIONS}/n98-magerun
-    - curl -fsSl https://raw.githubusercontent.com/iArren/composer-bash-completion/master/composer -o ${BUILD_PATHS_BASH_COMPLETITIONS}/composer
-    - curl -fsSl https://raw.githubusercontent.com/wp-cli/wp-cli/master/utils/wp-completion.bash -o ${BUILD_PATHS_BASH_COMPLETITIONS}/wp-cli
-    - DOCKER_COMPOSE_LATEST_VERSION=$(git-get-latest-release https://github.com/docker/compose/ )
-    - https://raw.githubusercontent.com/docker/compose/${DOCKER_COMPOSE_LATEST_VERSION}/contrib/completion/bash/docker-compose -o ${BUILD_PATHS_BASH_COMPLETITIONS}/docker-compose
-    - minikube completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/minikube
-    - kubectl completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kubectl
-    - kops completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kops
-    - helm completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/helm
-    
+    - title: "Add Bash completitions"
+      commands:
+        - mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/
+        - curl -fsSl https://raw.githubusercontent.com/netz98/n98-magerun/master/res/autocompletion/bash/n98-magerun.phar.bash -o ${BUILD_PATHS_BASH_COMPLETITIONS}/n98-magerun
+        - curl -fsSl https://raw.githubusercontent.com/iArren/composer-bash-completion/master/composer -o ${BUILD_PATHS_BASH_COMPLETITIONS}/composer
+        - curl -fsSl https://raw.githubusercontent.com/wp-cli/wp-cli/master/utils/wp-completion.bash -o ${BUILD_PATHS_BASH_COMPLETITIONS}/wp-cli
+        - DOCKER_COMPOSE_LATEST_VERSION=$(git-get-latest-release https://github.com/docker/compose/ )
+        - curl -fsSl https://raw.githubusercontent.com/docker/compose/${DOCKER_COMPOSE_LATEST_VERSION}/contrib/completion/bash/docker-compose -o ${BUILD_PATHS_BASH_COMPLETITIONS}/docker-compose
+        - minikube completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/minikube
+        - kubectl completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kubectl
+        - kops completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kops
+        - helm completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/helm
     
     #
     # Conf
