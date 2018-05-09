@@ -40,6 +40,7 @@ All required cli in one container
   + py-pip
   + ansible
   + py-psutil
+  + openssh-client
   + libc6-compat
   + php7
   + php7-curl
