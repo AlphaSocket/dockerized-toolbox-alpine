@@ -68,6 +68,7 @@ All required cli in one container
   + php7-sockets
   + php7-sqlite3
   + php7-xml
+  + php7-simplexml
   + php7-zip
   + php7-zlib
   + nodejs
