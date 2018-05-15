@@ -1,6 +1,6 @@
 # alphasocket/dockerized-toolbox-alpine
 #### toolbox-alpine
-All required cli in one container
+This docker image will contain all required cli tools for security/development/testing operations
 
 
 | [![Build Status](https://semaphoreci.com/api/v1/alphasocket/dockerized-toolbox-alpine/branches/latest/badge.svg)](https://semaphoreci.com/alphasocket/dockerized-toolbox-alpine) | Size / Layers | Version |
