@@ -36,7 +36,8 @@ MAGESCAN_LATEST=$(git-get-latest-release https://github.com/steverobbins/magesca
 curl -fsSL https://github.com/steverobbins/magescan/releases/download/${MAGESCAN_LATEST}/magescan.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/magescan.phar
 pip install mwscan
 pip install docker-compose
-curl -fsSL https://moncho.github.io/dry/dryup.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
+DRY_LATEST=$(git-get-latest-release https://github.com/moncho/dry/ )
+curl -fsSL https://github.com/moncho/dry/releases/download/${DRY_LATEST}/dry-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
 pip install awscli
 GCLOUD_VERSION="199.0.0"
 curl -fsSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz -o /tmp/google-cloud-sdk-linux-x86_64.tar.gz
@@ -44,18 +45,20 @@ tar xf /tmp/google-cloud-sdk-linux-x86_64.tar.gz -C /usr/local/lib/
 ln -s /usr/local/lib/google-cloud-sdk/bin/* /usr/local/bin/
 rm /tmp/google-cloud-sdk-linux-x86_64.tar.gz
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-curl -fsSL https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_LATEST/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
+curl -fsSL https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_LATEST}/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
 HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ )
 mkdir /tmp/helm
 curl -fsSL https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz -o /tmp/helm/helm.tar.gz
 tar -xvf /tmp/helm/helm.tar.gz -C /tmp/helm/
 mv /tmp/helm/linux-amd64/helm ${BUILD_PATHS_BINARIES_FOLDER}/helm
 KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )
-curl -fsSL https://github.com/kubernetes/kops/releases/download/$KOPS_LATEST/kops-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kops
+curl -fsSL https://github.com/kubernetes/kops/releases/download/${KOPS_LATEST}/kops-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kops
 ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
-curl -fsSL https://github.com/argoproj/argo/releases/download/$ARGO_LATEST/argo-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/argo
+curl -fsSL https://github.com/argoproj/argo/releases/download/${ARGO_LATEST}/argo-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/argo
+KOMPOSE_LATEST=$(git-get-latest-release https://github.com/kubernetes/kompose )
+curl -L https://github.com/kubernetes/kompose/releases/download/${KOMPOSE_LATEST}/kompose-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kompose
 MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
-curl -fsSL https://storage.googleapis.com/minikube/releases/$MINIKUBE_LATEST/minikube-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/minikube
+curl -fsSL https://storage.googleapis.com/minikube/releases/${MINIKUBE_LATEST}/minikube-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/minikube
 git -C /usr/local/lib/ clone https://github.com/Alphasocket/kubeadm-dind-cluster
 ln -s /usr/local/lib/kubeadm-dind-cluster/dind-cluster.sh ${BUILD_PATHS_BINARIES_FOLDER}/dind-cluster.sh
 ln -s /usr/local/lib/kubeadm-dind-cluster/clusterctl ${BUILD_PATHS_BINARIES_FOLDER}/clusterctl
