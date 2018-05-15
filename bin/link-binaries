@@ -1,0 +1,22 @@
+#!/bin/bash
+
+PROJECTS_PATH="${HOME}/Projects"
+BINARIES_PATH="${HOME}/bin"
+TOOLBOX_PATH="$(readlink -f $(dirname $(dirname $0) ) )"
+TOOLBOX_BINARIES_PATH="${TOOLBOX_PATH}/bin"
+TOOLBOXCTL_SOURCE_PATH="${TOOLBOX_BINARIES_PATH}/toolboxctl"
+TOOLBOXCTL_TARGET_PATH="${BINARIES_PATH}/toolboxctl"
+
+unlink "${TOOLBOXCTL_TARGET_PATH}" 
+ln -s "${TOOLBOXCTL_SOURCE_PATH}" "${TOOLBOXCTL_TARGET_PATH}"
+
+#TOOLBOX_BINARIES="$(toolboxctl exec ls --color=never -l /usr/local/bin | grep ^- | awk '{print $9}' | grep -v docker | grep -v modprobe)"
+TOOLBOX_BINARIES="$(toolboxctl exec find /usr/local/bin -mindepth 1 -maxdepth 1 -type f | grep -v docker | grep -v modprobe )"
+#TOOLBOX_BINARIES="$(toolboxctl exec find /usr/local/bin -mindepth 1 -maxdepth 1 -type f -exec basename {} \; | grep -v docker | grep -v modprobe )"
+
+for TOOLBOX_BINARY in $TOOLBOX_BINARIES;
+do
+    TOOLBOX_BINARY="$(basename ${TOOLBOX_BINARY})"
+    unlink "${BINARIES_PATH}/${TOOLBOX_BINARY}" 1> /dev/null; 
+    ln -s "${TOOLBOX_BINARIES_PATH}/runner" "${BINARIES_PATH}/${TOOLBOX_BINARY}";
+done;

@@ -64,7 +64,7 @@ function toolboxctl::start_daemon(){
 }
 
 function toolboxctl::exec_command(){
-	CONTAINER_MODE="-it"
+	CONTAINER_MODE="${CONTAINER_MODE:--i}"
     CONTAINER_COMMAND=$@
     
     if [ $RUNNING = 0 ]; then
@@ -83,7 +83,8 @@ function toolboxctl::remove_container(){
 }
 
 function toolboxctl::run_container(){
-	CONTAINER_COMMAND="bash"
+	CONTAINER_MODE="-it"
+    CONTAINER_COMMAND="bash"
 	toolboxctl::exec_command $CONTAINER_COMMAND
 }
 
