@@ -11,6 +11,14 @@ set -e
 USER_ID=$(id -u)
 GROUP_ID=$(cut -d: -f3 < <(getent group docker))
 
+PROJECTS_PATH="${HOME}/Projects"
+BINARIES_PATH="${HOME}/bin"
+TOOLBOX_PATH="$( dirname $(dirname $(readlink -f $0) ) )"
+TOOLBOX_BINARIES_PATH="${TOOLBOX_PATH}/bin"
+#TOOLBOXCTL_SOURCE_PATH="${TOOLBOX_BINARIES_PATH}/toolboxctl"
+TOOLBOXCTL_SOURCE_PATH="$(readlink -f $0)"
+TOOLBOXCTL_TARGET_PATH="${BINARIES_PATH}/toolboxctl"
+
 DOCKER_BIN_PATH=$(which docker 2> /dev/null)
 DOCKER_SOCKET_PATH="${DOCKER_SOCKET_PATH:-/var/run/docker.sock}"
 DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:/var/run/docker.sock "
@@ -49,6 +57,62 @@ function toolboxctl::destroy(){
 
 function toolboxctl::pull_image(){
 	docker pull $CONTAINER_IMAGE
+}
+
+function toolboxctl::link_binaries(){
+    if [ $RUNNING = 0 ]; then
+        toolboxctl::init_container
+    fi
+    
+    mkdir -p "${TOOLBOX_BINARIES_PATH}" 
+    # Recreate toolboxctl link
+	unlink "${TOOLBOXCTL_TARGET_PATH}" || true
+    ln -s "${TOOLBOXCTL_SOURCE_PATH}" "${TOOLBOXCTL_TARGET_PATH}"
+    
+    #TOOLBOX_BINARIES="$(toolboxctl exec ls --color=never -l /usr/local/bin | grep ^- | awk '{print $9}' | grep -v docker | grep -v modprobe)"
+    #TOOLBOX_BINARIES="$(toolboxctl exec find /usr/local/bin -mindepth 1 -maxdepth 1 -type f -exec basename {} \; | grep -v docker | grep -v modprobe )"
+    TOOLBOX_BINARIES="$(toolboxctl exec find /usr/local/bin -mindepth 1 -maxdepth 1 -type f | grep -v docker | grep -v modprobe )"
+    for TOOLBOX_BINARY in $TOOLBOX_BINARIES;
+    do
+        TOOLBOX_BINARY="$(basename ${TOOLBOX_BINARY})"
+        unlink "${BINARIES_PATH}/${TOOLBOX_BINARY}" || true; 
+        ln -s "${TOOLBOX_BINARIES_PATH}/runner" "${BINARIES_PATH}/${TOOLBOX_BINARY}";
+    done;
+}
+
+function toolboxctl::start_nfs_server(){
+    
+    PRIVATE_NETWORKS="10.*.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.16.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.17.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.18.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.19.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.20.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.21.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.22.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.23.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.24.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.25.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.26.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.27.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.28.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.29.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.30.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.31.*.*"
+    PRIVATE_NETWORKS="${PRIVATE_NETWORKS},192.168.*.*"
+    
+    PRIVATE_NETWORKS='*'
+    docker run -d --name toolbox_nfs_server --privileged -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
+}
+
+function toolboxctl::stop_nfs_server(){
+    docker stop toolbox_nfs_server &> /dev/null || true
+    docker rm toolbox_nfs_server &> /dev/null || true
+}
+
+function toolboxctl::restart_nfs_server(){
+    toolboxctl::stop_nfs_server
+    toolboxctl::start_nfs_server
 }
 
 function toolboxctl::init_container(){
@@ -147,6 +211,18 @@ function toolboxctl::main(){
                 toolboxctl::run_container
                 log "Updated Toolbox"
             fi
+            ;;
+        link:binaries)
+            toolboxctl::link_binaries
+            ;;
+        nfs:start)
+            toolboxctl::start_nfs_server
+            ;;
+        nfs:stop)
+            toolboxctl::stop_nfs_server
+            ;;
+        nfs:restart)
+            toolboxctl::restart_nfs_server
             ;;
         stop)
             if [ $RUNNING = 1 ]; then
