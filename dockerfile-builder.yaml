@@ -213,6 +213,7 @@ test:
         - TEST_CONTAINER_MAIN_ID=$(
             docker run
               -d --name=$TEST_CONTAINER_NAME
+              --cap-add=NET_ADMIN
               ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
           )
         - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
