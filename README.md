@@ -38,6 +38,7 @@ This docker image will contain all required cli tools for security/development/t
   + man-pages
   + fcgi
   + openssh-client
+  + ansible
   + nfs-utils
   + iproute2
   + libc6-compat
@@ -77,8 +78,6 @@ This docker image will contain all required cli tools for security/development/t
   + python3
   + py-pip
   + py-psutil
-  + py-pip
-  + ansible
   + mysql-client
   + redis
   + py-crcmod
@@ -101,4 +100,7 @@ CONFIG_USERS_ADDITIONAL_GROUPS=""
 CONFIG_REDINESS_TEST="true"
 CONFIG_LIVENESS_TEST="true"
 CONFIG_PATHS_CONTAINER_STATUS="/tmp/container_status"
+CONFIG_NFS_SHARED_DIRECTORY="/var/nfsshare"
+CONFIG_NFS_IP_SPERMITTED="127.0.0.1,10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*"
+CONFIG_NFS_SYNC="async"
 ~~~

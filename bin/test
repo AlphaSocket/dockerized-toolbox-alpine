@@ -31,7 +31,7 @@ echo "# Cleaned"
 echo "#\n# Running test\n#\n"
 # Testing container readiness
 echo "### Testing container readiness..."
-TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --cap-add=NET_ADMIN 03192859189254/toolbox-alpine:latest )
+TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --cap-add=SYS_ADMIN 03192859189254/toolbox-alpine:latest )
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
 TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
 MAX_TRIES=300

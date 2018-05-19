@@ -34,12 +34,12 @@ setup:
   envvars:
     dependencies:
       setup: gcc py-setuptools openssl-dev jansson-dev python-dev build-base libc-dev file-dev automake autoconf libtool flex
-      utilities: bash unzip jq htop git mercurial gnupg man man-pages fcgi openssh-client nfs-utils iproute2
+      utilities: bash unzip jq htop git mercurial gnupg man man-pages fcgi openssh-client ansible nfs-utils iproute2
       op: libc6-compat
       #php7_2: php@php7_2 php-curl@php7_2 php-dom@php7_2 php-gd@php7_2 php-gettext@php7_2 php-iconv@php7_2 php-json@php7_2 php-mbstring@php7_2 php-mysqli@php7_2 php-opcache@php7_2 php-openssl@php7_2 php-pdo@php7_2 php-pdo_dblib@php7_2 php-pdo_mysql@php7_2 php-pdo_pgsql@php7_2 php-pdo_sqlite@php7_2 php-pear@php7_2 php-pgsql@php7_2 php-phar@php7_2 php-phpdbg@php7_2 php-posix@php7_2 php-session@php7_2 php-soap@php7_2 php-sockets@php7_2 php-sqlite3@php7_2 php-xml@php7_2 php-simplexml@php7_2 php-zip@php7_2 php-zlib@php7_2 
       php: php7 php7-curl php7-dom php7-gd php7-ctype php7-gettext php7-iconv php7-json php7-mbstring php7-mcrypt php7-mysqli php7-opcache php7-openssl php7-pdo php7-pdo_dblib php7-pdo_mysql php7-pdo_pgsql php7-pdo_sqlite php7-pear php7-pgsql php7-phar php7-posix php7-session php7-soap php7-sockets php7-sqlite3 php7-xml php7-simplexml php7-zip php7-zlib
       node: nodejs nodejs-npm
-      python: python python3 py-pip py-psutil py-pip ansible 
+      python: python python3 py-pip py-psutil
       db: mysql-client redis
       google: py-crcmod libc6-compat openssh-client
       runtime:
@@ -169,10 +169,18 @@ setup:
         - mkdir -p /var/lib/nfs/rpc_pipefs
         - mkdir -p /var/lib/nfs/v4recovery 
         - echo "rpc_pipefs    /var/lib/nfs/rpc_pipefs rpc_pipefs      defaults        0       0" >> /etc/fstab
-        - echo "nfsd  /proc/fs/nfsd   nfsd    defaults        0       0" >> /etc/fstab
+        - echo "nfsd          /proc/fs/nfsd           nfsd            defaults        0       0" >> /etc/fstab
         - chmod +x /usr/bin/nfsd.sh /usr/bin/confd
         
 config:
+  envvars:
+    nfs:
+      shared:
+        directory: '/var/nfsshare'
+      ip:
+        spermitted: "127.0.0.1,10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*"
+      sync: 'async'
+    
   processes:
     #
     # Bash completitions
@@ -190,6 +198,7 @@ config:
         - kubectl completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kubectl
         - kops completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kops
         - helm completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/helm
+        - kompose completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kompose
     
     #
     # Conf
@@ -213,7 +222,7 @@ test:
         - TEST_CONTAINER_MAIN_ID=$(
             docker run
               -d --name=$TEST_CONTAINER_NAME
-              --cap-add=NET_ADMIN
+              --cap-add=SYS_ADMIN
               ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
           )
         - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
