@@ -37,10 +37,9 @@ This docker image will contain all required cli tools for security/development/t
   + man
   + man-pages
   + fcgi
-  + py-pip
-  + ansible
-  + py-psutil
   + openssh-client
+  + nfs-utils
+  + iproute2
   + libc6-compat
   + php7
   + php7-curl
@@ -77,6 +76,9 @@ This docker image will contain all required cli tools for security/development/t
   + python
   + python3
   + py-pip
+  + py-psutil
+  + py-pip
+  + ansible
   + mysql-client
   + redis
   + py-crcmod
