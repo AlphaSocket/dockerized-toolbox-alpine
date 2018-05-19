@@ -18,12 +18,32 @@ stop()
 }
 
 if [ -z "${SHARED_DIRECTORY}" ]; then
-  echo "The SHARED_DIRECTORY environment variable is missing or null, exiting..."
-  exit 1
+  echo "The SHARED_DIRECTORY environment variable is missing or null, defaulting to /nfsshare "
+  mkdir -p /nfsshare 
 fi
 if [ -z "${PERMITTED}" ]; then
-  echo "The PERMITTED environment variable is missing or null, defaulting to '*'."
-  echo "Any client can mount."
+  PRIVATE_NETWORKS="10.*.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.16.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.17.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.18.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.19.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.20.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.21.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.22.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.23.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.24.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.25.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.26.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.27.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.28.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.29.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.30.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},172.31.*.*"
+  PRIVATE_NETWORKS="${PRIVATE_NETWORKS},192.168.*.*"
+    
+  echo "The PERMITTED environment variable is missing or null, defaulting to privat networks."
+  echo "Only hosts in private networks can mount"
+  PERMITTED=$PRIVATE_NETWORKS
 fi
 if [ -z "${READ_ONLY}" ]; then
   echo "The READ_ONLY environment variable is missing or null, defaulting to 'rw'"
