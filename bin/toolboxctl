@@ -24,11 +24,13 @@ DOCKER_SOCKET_PATH="${DOCKER_SOCKET_PATH:-/var/run/docker.sock}"
 DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:/var/run/docker.sock "
 
 CONTAINER_RUN_AS_PRIVILIGED=${CONTAINER_RUN_AS_PRIVILIGED:0}
-CONTAINER_NAME="toolbox"
+CONTAINER_NAME="toolbox_main"
 CONTAINER_VOLUMES=" -v $HOME:$HOME $DOCKER_VOLUMES "
 CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
 CONTAINER_COMMAND="sleep 999999"
+
+NFS_CONTAINER_NAME="toolbox"
 
 # Globals
 log() {
@@ -167,7 +169,9 @@ function toolboxctl::kill_container(){
 function toolboxctl::main(){
     toolboxctl::initialize
     
-    if [ $(docker ps -f "name=$CONTAINER_NAME" --format '{{.Names}}' | grep -c $CONTAINER_NAME ) = 1 ]; then
+    CONTAINER_ID=$(docker ps -aqf "name=$CONTAINER_NAME")
+    
+    if [ $CONTAINER_ID ] && [ "$( docker inspect -f {{.State.Running}} $CONTAINER_ID )" = 'true' ]; then
         RUNNING=1
     else
         RUNNING=0
@@ -179,6 +183,7 @@ function toolboxctl::main(){
                 log "Toolbox already running"
             else
                 toolboxctl::start_daemon
+                toolboxctl::restart_nfs_server
                 log "Toolbox started"
             fi
             ;;
@@ -227,6 +232,7 @@ function toolboxctl::main(){
         stop)
             if [ $RUNNING = 1 ]; then
                 toolboxctl::stop_container
+                toolboxctl::stop_nfs_server
                 log "Toolbox stopped"
             else
                 err "Toolbox not running"
