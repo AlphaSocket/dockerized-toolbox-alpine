@@ -174,8 +174,7 @@ setup:
         - CONFIG_NFS_SHARED_DIRECTORY=${BUILD_PATHS_BINARIES_FOLDER}
         - CONFIG_NFS_IP_PERMITTED="127.0.0.1,10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*"
         - CONFIG_SYNC='sync'
-        - /usr/bin/confd -onetime
-        #- /usr/sbin/exportfs -rv
+        #- /usr/bin/confd -onetime
         
 config:
   envvars:
@@ -204,7 +203,7 @@ config:
         - kops completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kops
         - helm completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/helm
         - kompose completion bash > ${BUILD_PATHS_BASH_COMPLETITIONS}/kompose
-    
+        
     #
     # Conf
     #
@@ -214,6 +213,16 @@ config:
         - gcloud config set component_manager/disable_update_check true
         - gcloud config set metrics/environment github_docker_image
         
+        
+    #
+    # NFS
+    #
+    - title: "Configure nfs exports"
+      commands:
+        - echo "" > /etc/exports
+        - echo "${BUILD_PATHS_BINARIES_FOLDER} $CONFIG_NFS_IP_PERMITTED(rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+        - echo "${HOME} $CONFIG_NFS_IP_PERMITTED(rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+        - /usr/sbin/exportfs -rv
 #
 # Test
 #
@@ -224,13 +233,8 @@ test:
     #
     - title: "Testing container readiness"
       commands:
-        - TEST_CONTAINER_MAIN_ID=$(
-            docker run
-              -d --name=$TEST_CONTAINER_NAME
-              --net=host
-              --cap-add=SYS_ADMIN
-              ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
-          )
+        - bin/toolboxctl start
+        - "TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)"
         - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
         - TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
         - MAX_TRIES=300
@@ -254,10 +258,8 @@ test:
     # 
     - title: "Tests"
       commands:
-        - docker exec $TEST_CONTAINER_MAIN_ID n98-magerun.phar
-        - docker exec $TEST_CONTAINER_MAIN_ID kubectl version --client
-        - docker exec $TEST_CONTAINER_MAIN_ID touch /home/nfs_test
         - mkdir -p /tmp/test_mount
-        - sudo mount -v -t nfs 127.0.0.1:${BUILD_PATHS_BINARIES_FOLDER} /tmp/test_mount &
-        - sleep 1
-        - ls -al /tmp/test_mount/kubectcl
+        - "sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/usr/local/bin /tmp/test_mount"
+        - PATH="$PATH:/tmp/test_mount"
+        - n98-magerun.phar
+        - kubectcl version --client

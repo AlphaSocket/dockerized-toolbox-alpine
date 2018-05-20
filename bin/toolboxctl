@@ -172,12 +172,25 @@ function toolboxctl::kill_container(){
 	docker kill $CONTAINER_NAME
 }
 
+function toolboxctl::get_container_id(){
+    CONTAINER_ID=$(docker ps -aqf "name=$CONTAINER_NAME")
+    echo $CONTAINER_ID
+}
+
+function toolboxctl::get_container_status(){
+    CONTAINER_ID=$(toolboxctl::get_container_id)
+    
+    if [ $CONTAINER_ID ] && [ "$( docker inspect -f {{.State.Running}} $CONTAINER_ID )" = 'true' ]; then
+        echo "Running"
+    else
+        echo "NotRunning"
+    fi
+}
+
 function toolboxctl::main(){
     toolboxctl::initialize
     
-    CONTAINER_ID=$(docker ps -aqf "name=$CONTAINER_NAME")
-    
-    if [ $CONTAINER_ID ] && [ "$( docker inspect -f {{.State.Running}} $CONTAINER_ID )" = 'true' ]; then
+    if [ $(toolboxctl::get_container_status) = 'Running' ]; then
         RUNNING=1
     else
         RUNNING=0
@@ -256,6 +269,12 @@ function toolboxctl::main(){
         exec)
             shift
             toolboxctl::exec_command $@
+            ;;
+        get:container:id)
+            echo $(toolboxctl::get_container_id)
+            ;;
+        get:container:status)
+            echo $(toolboxctl::get_container_status)
             ;;
         --)
             shift
