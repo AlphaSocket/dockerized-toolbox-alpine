@@ -255,4 +255,5 @@ test:
       commands:
         - docker exec $TEST_CONTAINER_MAIN_ID n98-magerun.phar
         - docker exec $TEST_CONTAINER_MAIN_ID kubectl version -c
-        - sudo mount -v 127.0.0.1:/home /tmp/test_mount
+        - mkdir -p /tmp/test_mount
+        - sudo mount -v -o nfsvers=4 127.0.0.1:/home /tmp/test_mount
