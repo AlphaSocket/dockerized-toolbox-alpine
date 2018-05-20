@@ -76,11 +76,16 @@ curl -fsSL https://gist.githubusercontent.com/AlphaSocket/e681bc0c087e6b4e1f6d4f
 curl -fsSL https://gist.githubusercontent.com/AlphaSocket/f139f80f6fd3bf2ff155ced0b81ce616/raw/196bf78149c308fe6d687926c09e73052656dc6f/node-get-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-get-dependencies
 curl -fsSL https://gist.githubusercontent.com/AlphaSocket/9780449ae2e3222e580d672f9aed68ae/raw/4c9877313f45d27ebdcd66c87e602d9302e8cbbd/node-link-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-link-dependencies
 chmod -R +x /usr/local/bin
+chmod +x /usr/bin/nfsd.sh
+chmod +x /usr/bin/confd
 mkdir -p /var/lib/nfs/rpc_pipefs
 mkdir -p /var/lib/nfs/v4recovery
 echo "rpc_pipefs    /var/lib/nfs/rpc_pipefs rpc_pipefs      defaults        0       0" >> /etc/fstab
 echo "nfsd          /proc/fs/nfsd           nfsd            defaults        0       0" >> /etc/fstab
-chmod +x /usr/bin/nfsd.sh /usr/bin/confd
+CONFIG_NFS_SHARED_DIRECTORY=/home
+CONFIG_NFS_IP_PERMITTED="127.0.0.1,10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*"
+CONFIG_SYNC='sync'
+/usr/bin/confd -onetime
 
 
 # Remove unecessary dependencies

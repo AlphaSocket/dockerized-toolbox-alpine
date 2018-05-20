@@ -39,10 +39,11 @@ SECONDS_BETWEEN_TRIES=1
 c=0
 while ! eval "$TEST_CONDITION"; do if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BREAK_CONDITION" ; then echo "Error toolbox-alpine container failed, printing logs and exiting\n"; docker logs $TEST_CONTAINER_MAIN_ID; exit 1; else c=$(($c + 1)); fi; echo "Try $c failed"; sleep ${SECONDS_BETWEEN_TRIES}; done && echo "### Container ready \n"
 
-# Testing binaries
-echo "### Testing binaries..."
+# Tests
+echo "### Tests..."
 docker exec $TEST_CONTAINER_MAIN_ID n98-magerun.phar
 docker exec $TEST_CONTAINER_MAIN_ID kubectl version -c
+sudo mount -v 127.0.0.1:/home /tmp/test_mount
 
 
 
