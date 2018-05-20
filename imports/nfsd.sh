@@ -64,10 +64,10 @@ while true; do
 
   # If $pid is null, do this to start or restart NFS:
   while [ -z "$pid" ]; do
-    echo "Starting Confd population of files..."
-    /usr/bin/confd -version
-    /usr/bin/confd -onetime
-    echo ""
+    #echo "Starting Confd population of files..."
+    #/usr/bin/confd -version
+    #/usr/bin/confd -onetime
+    #echo ""
     echo "Displaying /etc/exports contents..."
     cat /etc/exports
     echo ""
