@@ -19,8 +19,8 @@ stop()
 
 if [ -z "${CONFIG_NFS_SHARED_DIRECTORY}" ]; then
   echo "The CONFIG_NFS_SHARED_DIRECTORY environment variable is missing or null, defaulting to /var/nfsshare "
-  mkdir -p /var/nfsshare
   CONFIG_NFS_SHARED_DIRECTORY="/var/nfsshare"
+  mkdir -p "$CONFIG_NFS_SHARED_DIRECTORY"
 fi
 if [ -z "${CONFIG_NFS_IP_PERMITTED}" ]; then
   PRIVATE_NETWORKS="127.0.0.1"
@@ -72,12 +72,12 @@ while true; do
     cat /etc/exports
     echo ""
 
-    # Normally only required if v3 will be used
-    # But currently enabled to overcome an NFS bug around opening an IPv6 socket
-    echo "Starting rpcbind..."
-    /sbin/rpcbind -w
-    echo "Displaying rpcbind status..."
-    /sbin/rpcinfo
+    ## Normally only required if v3 will be used
+    ## But currently enabled to overcome an NFS bug around opening an IPv6 socket
+    #echo "Starting rpcbind..."
+    #/sbin/rpcbind -w
+    #echo "Displaying rpcbind status..."
+    #/sbin/rpcinfo
 
     # Only required if v3 will be used
     # /usr/sbin/rpc.idmapd

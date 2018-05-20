@@ -125,7 +125,8 @@ function toolboxctl::init_container(){
 	docker run $CONTAINER_MODE $CONTAINER_USER --name "$CONTAINER_NAME" \
         --net host --cap-add SYS_ADMIN -p $CONTAINER_PORT:$HOST_PORT_NFS \
         -v $HOME:$HOME $DOCKER_VOLUMES \
-        -e HOME=$HOME -e SHARED_DIRECTORY=$HOME -e PERMITTED='*' -w $PWD \
+        -e HOME=$HOME -e CONFIG_NFS_SHARED_DIRECTORY=$HOME -e CONFIG_NFS_IP_PERMITTED='*'\
+        -w $PWD \
         $CONTAINER_IMAGE "$CONTAINER_COMMAND"
 }
 
