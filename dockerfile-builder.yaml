@@ -171,7 +171,7 @@ setup:
         - echo "rpc_pipefs    /var/lib/nfs/rpc_pipefs rpc_pipefs      defaults        0       0" >> /etc/fstab
         - echo "nfsd          /proc/fs/nfsd           nfsd            defaults        0       0" >> /etc/fstab
         
-        - CONFIG_NFS_SHARED_DIRECTORY=/home
+        - CONFIG_NFS_SHARED_DIRECTORY=${BUILD_PATHS_BINARIES_FOLDER}
         - CONFIG_NFS_IP_PERMITTED="127.0.0.1,10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*"
         - CONFIG_SYNC='sync'
         - /usr/bin/confd -onetime
@@ -257,6 +257,6 @@ test:
         - docker exec $TEST_CONTAINER_MAIN_ID kubectl version --client
         - docker exec $TEST_CONTAINER_MAIN_ID touch /home/nfs_test
         - mkdir -p /tmp/test_mount
-        - sudo mount -v -t nfs 127.0.0.1:/home /tmp/test_mount &
+        - sudo mount -v -t nfs 127.0.0.1:${BUILD_PATHS_BINARIES_FOLDER} /tmp/test_mount &
         - sleep 1
-        - ls -al /tmp/test_mount/nfs_test
+        - ls -al /tmp/test_mount/kubectcl

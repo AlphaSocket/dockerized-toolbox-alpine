@@ -45,9 +45,9 @@ docker exec $TEST_CONTAINER_MAIN_ID n98-magerun.phar
 docker exec $TEST_CONTAINER_MAIN_ID kubectl version --client
 docker exec $TEST_CONTAINER_MAIN_ID touch /home/nfs_test
 mkdir -p /tmp/test_mount
-sudo mount -v -t nfs 127.0.0.1:/home /tmp/test_mount &
+sudo mount -v -t nfs 127.0.0.1:/usr/local/bin /tmp/test_mount &
 sleep 1
-ls -al /tmp/test_mount/nfs_test
+ls -al /tmp/test_mount/kubectcl
 
 
 
