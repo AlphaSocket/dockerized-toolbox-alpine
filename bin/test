@@ -31,7 +31,8 @@ echo "# Cleaned"
 echo "#\n# Running test\n#\n"
 # Testing container readiness
 echo "### Testing container readiness..."
-TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --net=host --cap-add=SYS_ADMIN 03192859189254/toolbox-alpine:latest )
+bin/toolboxctl start
+TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
 TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
 MAX_TRIES=300
@@ -41,13 +42,11 @@ while ! eval "$TEST_CONDITION"; do if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BRE
 
 # Tests
 echo "### Tests..."
-docker exec $TEST_CONTAINER_MAIN_ID n98-magerun.phar
-docker exec $TEST_CONTAINER_MAIN_ID kubectl version --client
-docker exec $TEST_CONTAINER_MAIN_ID touch /home/nfs_test
 mkdir -p /tmp/test_mount
-sudo mount -v -t nfs 127.0.0.1:/usr/local/bin /tmp/test_mount &
-sleep 1
-ls -al /tmp/test_mount/kubectcl
+sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/usr/local/bin /tmp/test_mount
+PATH="/home/sam/bin/global_node_modules/.npm-packages/bin:/home/sam/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/sam/bin:/snap/bin:/home/sam/.vimpkg/bin:/tmp/test_mount"
+n98-magerun.phar
+kubectcl version --client
 
 
 

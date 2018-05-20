@@ -24,6 +24,13 @@ gcloud config set core/disable_usage_reporting true
 gcloud config set component_manager/disable_update_check true
 gcloud config set metrics/environment github_docker_image
 
+# Configure nfs exports
+echo "### Configure nfs exports..."
+echo "" > /etc/exports
+echo "${BUILD_PATHS_BINARIES_FOLDER} $CONFIG_NFS_IP_PERMITTED(rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+echo "${HOME} $CONFIG_NFS_IP_PERMITTED(rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+/usr/sbin/exportfs -rv
+
 
 
 exit 0
