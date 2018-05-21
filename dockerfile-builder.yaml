@@ -23,6 +23,7 @@ build:
     - imports/nfsd.sh:/usr/bin/nfsd.sh
     - imports/confd-binary:/usr/bin/confd
     - imports/confd:/etc/confd
+    - imports/pause:/usr/local/bin/pause
 
 #
 # Setup process injected in dockerfile
@@ -96,8 +97,9 @@ setup:
         #
         - pip install docker-compose
         
-        - DRY_LATEST=$(git-get-latest-release https://github.com/moncho/dry/ )
-        - curl -fsSL https://github.com/moncho/dry/releases/download/${DRY_LATEST}/dry-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
+        #- DRY_LATEST=$(git-get-latest-release https://github.com/moncho/dry/ )
+        #- curl -fsSL https://github.com/moncho/dry/releases/download/${DRY_LATEST}/dry-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
+        - curl https://moncho.github.io/dry/dryup.sh | sh
         
         #
         # Clouds
