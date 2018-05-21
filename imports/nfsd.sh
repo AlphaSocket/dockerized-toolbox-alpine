@@ -24,7 +24,7 @@ echo "Exporting File System..."
 echo "Starting Mountd in the background..."
 /usr/sbin/rpc.mountd --debug all --no-udp --no-nfs-version 2 --no-nfs-version 3
 
-while [ -z "$(pidof rpc.mountd)" ] && [ -z "$(pidof rpc.nfsd)" ]; do
+while [ -z "$(pidof rpc.mountd)" ] ; do
     sleep 1
 done
 
