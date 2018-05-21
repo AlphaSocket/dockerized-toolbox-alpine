@@ -36,8 +36,7 @@ MAGESCAN_LATEST=$(git-get-latest-release https://github.com/steverobbins/magesca
 curl -fsSL https://github.com/steverobbins/magescan/releases/download/${MAGESCAN_LATEST}/magescan.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/magescan.phar
 pip install mwscan
 pip install docker-compose
-DRY_LATEST=$(git-get-latest-release https://github.com/moncho/dry/ )
-curl -fsSL https://github.com/moncho/dry/releases/download/${DRY_LATEST}/dry-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
+curl https://moncho.github.io/dry/dryup.sh | sh
 pip install awscli
 GCLOUD_VERSION="199.0.0"
 curl -fsSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz -o /tmp/google-cloud-sdk-linux-x86_64.tar.gz
