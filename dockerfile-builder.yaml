@@ -235,12 +235,12 @@ test:
     #
     - title: "Testing container readiness"
       commands:
-        - curl -fSsL https://raw.githubusercontent.com/AlphaSocket/dockerized-toolbox-alpine/master/bin/toolboxctl -o bin/toolboxctl
-        - chmod +x bin/toolboxctl
-        - export MAIN_CONTAINER_IMAGE="${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}"
-        - bin/toolboxctl start
-        - "TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)"
-        
+        #- curl -fSsL https://raw.githubusercontent.com/AlphaSocket/dockerized-toolbox-alpine/master/bin/toolboxctl -o bin/toolboxctl
+        #- chmod +x bin/toolboxctl
+        #- export MAIN_CONTAINER_IMAGE="${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}"
+        #- bin/toolboxctl start
+        #- "TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)"
+        #
         - TEST_CONTAINER_MAIN_ID=$(
              docker run
                -d --name=$TEST_CONTAINER_NAME
