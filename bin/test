@@ -36,6 +36,7 @@ chmod +x bin/toolboxctl
 export MAIN_CONTAINER_IMAGE="03192859189254/toolbox-alpine:latest"
 bin/toolboxctl start
 TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)
+TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --privileged --net host -v /home/sam:/home/sam -v /var/run/docker.sock:/var/run/docker.sock -e HOME=/home/sam -w /home/sam/Projects/alphasocket/dockerized-toolbox-alpine 03192859189254/toolbox-alpine:latest /usr/local/bin/pause )
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
 TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
 MAX_TRIES=300

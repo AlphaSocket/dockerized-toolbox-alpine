@@ -64,8 +64,8 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-run /usr/local/bin/docker-run
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1526940143
-ADD imports/bin/config /usr/local/bin/config/1526940143
+ADD imports/bin/setup /usr/local/bin/setup/1526943548
+ADD imports/bin/config /usr/local/bin/config/1526943548
 ADD imports/nfsd.sh /usr/bin/nfsd.sh
 ADD imports/confd-binary /usr/bin/confd
 ADD imports/confd/confd.toml /etc/confd/confd.toml
@@ -76,7 +76,7 @@ ADD imports/pause /usr/local/bin/pause
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1526940143 1>/dev/stdout 2>/dev/stderr
+    /usr/local/bin/setup/1526943548 1>/dev/stdout 2>/dev/stderr
 
 EXPOSE 2049 
 
