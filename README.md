@@ -41,6 +41,7 @@ This docker image will contain all required cli tools for security/development/t
   + ansible
   + nfs-utils
   + iproute2
+  + file
   + libc6-compat
   + php7
   + php7-curl
