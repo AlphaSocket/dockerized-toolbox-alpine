@@ -31,6 +31,8 @@ echo "# Cleaned"
 echo "#\n# Running test\n#\n"
 # Testing container readiness
 echo "### Testing container readiness..."
+curl -fSsL https://raw.githubusercontent.com/AlphaSocket/dockerized-toolbox-alpine/master/bin/toolboxctl -o bin/toolboxctl
+chmod +x bin/toolboxctl
 bin/toolboxctl start
 TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
