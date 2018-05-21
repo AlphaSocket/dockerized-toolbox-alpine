@@ -33,7 +33,7 @@ echo "#\n# Running test\n#\n"
 echo "### Testing container readiness..."
 curl -fSsL https://raw.githubusercontent.com/AlphaSocket/dockerized-toolbox-alpine/master/bin/toolboxctl -o bin/toolboxctl
 chmod +x bin/toolboxctl
-MAIN_CONTAINER_IMAGE="03192859189254/toolbox-alpine:latest"
+export MAIN_CONTAINER_IMAGE="03192859189254/toolbox-alpine:latest"
 bin/toolboxctl start
 TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
