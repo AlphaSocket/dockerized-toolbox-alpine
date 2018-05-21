@@ -247,7 +247,7 @@ test:
                 --privileged --net host 
                 -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock 
                 -e HOME=$HOME -w $PWD 
-                ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION} /usr/local/bin/pause
+                ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION} /usr/bin/nfsd.sh
            )
         - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
         - TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'

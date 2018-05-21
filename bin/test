@@ -31,7 +31,7 @@ echo "# Cleaned"
 echo "#\n# Running test\n#\n"
 # Testing container readiness
 echo "### Testing container readiness..."
-TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --privileged --net host -v /home/sam:/home/sam -v /var/run/docker.sock:/var/run/docker.sock -e HOME=/home/sam -w /home/sam/Projects/alphasocket/dockerized-toolbox-alpine 03192859189254/toolbox-alpine:latest /usr/local/bin/pause )
+TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --privileged --net host -v /home/sam:/home/sam -v /var/run/docker.sock:/var/run/docker.sock -e HOME=/home/sam -w /home/sam/Projects/alphasocket/dockerized-toolbox-alpine 03192859189254/toolbox-alpine:latest /usr/bin/nfsd.sh )
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
 TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
 MAX_TRIES=300
