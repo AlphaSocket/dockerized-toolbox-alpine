@@ -1,0 +1,287 @@
+#!/bin/bash
+#
+# Manage Toolbox (CLI container)
+#
+# SG: https://google.github.io/styleguide/shell.xml
+# https://docs.google.com/document/d/1gkRfW2xCWA9UhpciJWWeRtMX0F125mz9-ceF6kRrhJo/edit#
+#
+
+set -e
+
+USER_ID=$(id -u)
+GROUP_ID=$(cut -d: -f3 < <(getent group docker))
+HOST_PORT_NFS=2049
+
+PROJECTS_PATH="${HOME}/Projects"
+BINARIES_PATH="${HOME}/bin"
+TOOLBOX_PATH="$( dirname $(dirname $(readlink -f $0) ) )"
+TOOLBOX_BINARIES_PATH="${TOOLBOX_PATH}/bin"
+#TOOLBOXCTL_SOURCE_PATH="${TOOLBOX_BINARIES_PATH}/toolboxctl"
+TOOLBOXCTL_SOURCE_PATH="$(readlink -f $0)"
+TOOLBOXCTL_TARGET_PATH="${BINARIES_PATH}/toolboxctl"
+
+DOCKER_BIN_PATH=$(which docker 2> /dev/null)
+DOCKER_SOCKET_PATH="${DOCKER_SOCKET_PATH:-/var/run/docker.sock}"
+DOCKER_CONTAINER_PATH="${DOCKER_CONTAINER_PATH:-/var/run/docker.sock}"
+DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:$DOCKER_CONTAINER_PATH "
+
+MAIN_CONTAINER_RUN_AS_PRIVILIGED=${MAIN_CONTAINER_RUN_AS_PRIVILIGED:0}
+MAIN_CONTAINER_NAME="toolbox_main"
+MAIN_CONTAINER_PORT=2049
+MAIN_CONTAINER_USER="-u $USER_ID:$GROUP_ID"
+MAIN_CONTAINER_IMAGE="${MAIN_CONTAINER_IMAGE:-alphasocket/toolbox-alpine:latest}"
+MAIN_CONTAINER_COMMAND="sleep 99999"
+
+NFS_CONTAINER_RUN_AS_PRIVILIGED=${NFS_CONTAINER_RUN_AS_PRIVILIGED:0}
+NFS_CONTAINER_NAME="toolbox_nfs_server"
+NFS_CONTAINER_MODE="-d"
+NFS_CONTAINER_PORT=2049
+NFS_CONTAINER_USER="-u $USER_ID:$GROUP_ID"
+NFS_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
+NFS_CONTAINER_COMMAND="/usr/bin/nfsd.sh"
+
+# Globals
+log() {
+  echo -ne "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@\n" >&1
+}
+
+err() {
+  echo -ne "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@\n" >&2
+}
+
+#
+# Toolbox
+#
+
+function toolboxctl::initialize(){
+    if [ -z "$DOCKER_BIN_PATH" ]; then
+        err "Docker client not found"
+        exit 1
+    fi
+}
+
+function toolboxctl::destroy(){
+    exit 0
+}
+
+
+function toolboxctl::pull_image(){
+	docker pull $MAIN_CONTAINER_IMAGE
+}
+
+function toolboxctl::link_binaries(){
+    if [ $RUNNING = 0 ]; then
+        toolboxctl::init_container
+    fi
+    
+    mkdir -p "${TOOLBOX_BINARIES_PATH}" 
+    # Recreate toolboxctl link
+	unlink "${TOOLBOXCTL_TARGET_PATH}" || true
+    ln -s "${TOOLBOXCTL_SOURCE_PATH}" "${TOOLBOXCTL_TARGET_PATH}"
+    
+    #TOOLBOX_BINARIES="$(toolboxctl exec ls --color=never -l /usr/local/bin | grep ^- | awk '{print $9}' | grep -v docker | grep -v modprobe)"
+    #TOOLBOX_BINARIES="$(toolboxctl exec find /usr/local/bin -mindepth 1 -maxdepth 1 -type f -exec basename {} \; | grep -v docker | grep -v modprobe )"
+    TOOLBOX_BINARIES="$(toolboxctl exec find /usr/local/bin -mindepth 1 -maxdepth 1 -type f | grep -v docker | grep -v modprobe )"
+    for TOOLBOX_BINARY in $TOOLBOX_BINARIES;
+    do
+        TOOLBOX_BINARY="$(basename ${TOOLBOX_BINARY})"
+        unlink "${BINARIES_PATH}/${TOOLBOX_BINARY}" || true; 
+        ln -s "${TOOLBOX_BINARIES_PATH}/runner" "${BINARIES_PATH}/${TOOLBOX_BINARY}";
+    done;
+}
+
+function toolboxctl::start_nfs_server(){
+    toolboxctl::stop_nfs_server
+    
+    #docker run -d --name toolbox_nfs_server --privileged -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
+    #docker run -d --name toolbox_nfs_server --cap-add=NET_ADMIN -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
+	docker run -d $NFS_CONTAINER_MODE \
+        --name "$NFS_CONTAINER_NAME" \
+        --net host --cap-add SYS_ADMIN \
+        --privileged \
+        -v $HOME:$HOME \
+        -e HOME=$HOME \
+        -w $PWD \
+        $NFS_CONTAINER_IMAGE 
+}
+function toolboxctl::stop_nfs_server(){
+    docker stop toolbox_nfs_server &> /dev/null || true
+    docker rm toolbox_nfs_server &> /dev/null || true
+}
+
+function toolboxctl::restart_nfs_server(){
+    toolboxctl::stop_nfs_server
+    toolboxctl::start_nfs_server
+}
+
+function toolboxctl::init_container(){
+    toolboxctl::remove_container
+	[[ $MAIN_CONTAINER_RUN_AS_PRIVILIGED = 1 ]] && MAIN_CONTAINER_USER="--privileged"
+	docker run $MAIN_CONTAINER_MODE --name "$MAIN_CONTAINER_NAME" \
+        --cap-add SYS_ADMIN $MAIN_CONTAINER_USER \
+        --net host -p $MAIN_CONTAINER_PORT:$HOST_PORT_NFS \
+        -v $HOME:$HOME $DOCKER_VOLUMES \
+        -e HOME=$HOME -e DOCKER_HOST=$DOCKER_CONTAINER_PATH \
+        -w $PWD \
+        $MAIN_CONTAINER_IMAGE $MAIN_CONTAINER_COMMAND
+}
+
+function toolboxctl::start_daemon(){
+	MAIN_CONTAINER_MODE="-d"
+	toolboxctl::init_container
+}
+
+function toolboxctl::exec_command(){
+	MAIN_CONTAINER_MODE="${MAIN_CONTAINER_MODE:--it}"
+    MAIN_CONTAINER_COMMAND=$@
+    
+    if [ $RUNNING = 0 ]; then
+        toolboxctl::init_container
+    else
+        docker exec $MAIN_CONTAINER_MODE $MAIN_CONTAINER_USER \
+            -e HOME=$HOME -w $PWD "$MAIN_CONTAINER_NAME" $MAIN_CONTAINER_COMMAND
+    fi
+}
+
+function toolboxctl::remove_container(){
+    if [ $RUNNING = 1 ]; then
+        docker stop "$MAIN_CONTAINER_NAME" 
+    fi
+    docker rm "$MAIN_CONTAINER_NAME" --force &> /dev/null || true 
+    
+}
+
+function toolboxctl::run_container(){
+	MAIN_CONTAINER_MODE="-it"
+    MAIN_CONTAINER_COMMAND="bash"
+	toolboxctl::exec_command $MAIN_CONTAINER_COMMAND
+}
+
+function toolboxctl::status_container(){
+	docker ps -f "name=$MAIN_CONTAINER_NAME"
+}
+
+function toolboxctl::stop_container(){
+	docker stop -t 0 $MAIN_CONTAINER_NAME 1> /dev/null
+}
+
+function toolboxctl::kill_container(){
+	docker kill $MAIN_CONTAINER_NAME
+}
+
+function toolboxctl::get_container_id(){
+    MAIN_CONTAINER_ID=$(docker ps -aqf "name=$MAIN_CONTAINER_NAME")
+    echo $MAIN_CONTAINER_ID
+}
+
+function toolboxctl::get_container_status(){
+    MAIN_CONTAINER_ID=$(toolboxctl::get_container_id)
+    
+    if [ $MAIN_CONTAINER_ID ] && [ "$( docker inspect -f {{.State.Running}} $MAIN_CONTAINER_ID )" = 'true' ]; then
+        echo "Running"
+    else
+        echo "NotRunning"
+    fi
+}
+
+function toolboxctl::main(){
+    toolboxctl::initialize
+    
+    if [ $(toolboxctl::get_container_status) = 'Running' ]; then
+        RUNNING=1
+    else
+        RUNNING=0
+    fi
+
+	case "$1" in
+        start)
+            if [ $RUNNING = 1 ]; then
+                log "Toolbox already running"
+            else
+                toolboxctl::start_daemon
+                log "Toolbox started"
+            fi
+            ;;
+        restart)
+            toolboxctl::start_daemon
+            log "Toolbox started"
+            ;;
+        run)
+            toolboxctl::run_container
+            ;;
+        status)
+            if [ $RUNNING = 1 ]; then
+                toolboxctl::status_container
+            else
+                log "Toolbox not running"
+            fi
+            ;;
+        clean)
+            toolboxctl::remove_container
+            if [ $RUNNING = 1 ]; then
+                log "Stopped and removed Toolbox container"
+            else
+                log "Removed Toolbox container"
+            fi
+            ;;
+        update)
+            toolboxctl::pull_image
+            if [ $RUNNING = 1 ]; then
+                toolboxctl::stop_container
+                toolboxctl::run_container
+                log "Updated Toolbox"
+            fi
+            ;;
+        link:binaries)
+            toolboxctl::link_binaries
+            ;;
+        nfs:start)
+            toolboxctl::start_nfs_server
+            ;;
+        nfs:stop)
+            toolboxctl::stop_nfs_server
+            ;;
+        nfs:restart)
+            toolboxctl::restart_nfs_server
+            ;;
+        stop)
+            if [ $RUNNING = 1 ]; then
+                toolboxctl::stop_container
+                log "Toolbox stopped"
+            else
+                err "Toolbox not running"
+                exit 1
+            fi
+            ;;
+        kill)
+            if [ $RUNNING = 1 ]; then
+                toolboxctl::kill_container
+            else
+                err "Toolbox not running"
+                exit 1
+            fi
+            ;;
+        exec)
+            shift
+            toolboxctl::exec_command $@
+            ;;
+        get:container:id)
+            echo $(toolboxctl::get_container_id)
+            ;;
+        get:container:status)
+            echo $(toolboxctl::get_container_status)
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            echo "Action not recognized"
+            exit 64
+            ;;
+    esac
+    
+    toolboxctl::destroy
+}
+
+toolboxctl::main $@
