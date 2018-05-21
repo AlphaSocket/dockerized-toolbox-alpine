@@ -74,10 +74,6 @@ do
     # Fix retrocompatibility Remove all old files
     # find . -maxdepth 1  ! -name 'dockerfile-builder.yaml' -type f -exec rm -f {} +
     rm -f .gitignore
-    rm -f envvars
-    rm -f test
-    rm -f deploy-branches
-    rm -f bin/*
     mkdir -p ./imports
     find . -maxdepth 1 -type d ! -name 'bin' ! -name 'imports' ! -name 'volumes' ! -name '.git' ! -name '.' -exec mv -t ./imports/ {} +
     ### 
