@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Run command
+#
+set -e
+
+# Configuration
+docker-config
+
+echo "### Starting container service"
+tini /usr/bin/nfsd.sh
+
+# Container command is failed if exiting here
+exit $?

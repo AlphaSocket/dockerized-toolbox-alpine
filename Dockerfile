@@ -61,11 +61,10 @@ ENV \
 	CONFIG_NFS_IP_SPERMITTED="127.0.0.1,10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*" \
 	CONFIG_NFS_SYNC="async"
 ADD imports/bin/docker-config /usr/local/bin/docker-config
-ADD imports/bin/docker-run /usr/local/bin/docker-run
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1526944468
-ADD imports/bin/config /usr/local/bin/config/1526944468
+ADD imports/bin/setup /usr/local/bin/setup/1527024849
+ADD imports/bin/config /usr/local/bin/config/1527024849
 ADD imports/nfsd.sh /usr/bin/nfsd.sh
 ADD imports/confd-binary /usr/bin/confd
 ADD imports/confd/confd.toml /etc/confd/confd.toml
@@ -76,13 +75,13 @@ ADD imports/pause /usr/local/bin/pause
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1526944468 1>/dev/stdout 2>/dev/stderr
+    /usr/local/bin/setup/1527024849 1>/dev/stdout 2>/dev/stderr
 
 EXPOSE 2049 
 
 
-ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["/usr/local/bin/docker-run"]
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["${BUILDER_TARGETS_CONTAINER_DOCKER_RUN}"]
 
 LABEL \
     org.label-schema.vcs-ref="$BUILD_COMMIT" \
