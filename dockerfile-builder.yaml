@@ -275,10 +275,7 @@ test:
     - title: "Tests"
       commands:
         - mkdir -p /tmp/test_mount_binaries
-        - mkdir -p /tmp/test_mount_home
         - "sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_binaries"
-        - "sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_home"
-        - ls -al /tmp/test_mount_home
         - PATH="$PATH:/tmp/test_mount_binaries"
         - n98-magerun.phar
-        - kubectcl version --client
+        - kubectl version --client

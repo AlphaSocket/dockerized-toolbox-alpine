@@ -42,13 +42,10 @@ while ! eval "$TEST_CONDITION"; do if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BRE
 # Tests
 echo "### Tests..."
 mkdir -p /tmp/test_mount_binaries
-mkdir -p /tmp/test_mount_home
 sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_binaries
-sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_home
-ls -al /tmp/test_mount_home
 PATH="/home/sam/bin/global_node_modules/.npm-packages/bin:/home/sam/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/sam/bin:/snap/bin:/home/sam/.vimpkg/bin:/tmp/test_mount_binaries"
 n98-magerun.phar
-kubectcl version --client
+kubectl version --client
 
 
 
