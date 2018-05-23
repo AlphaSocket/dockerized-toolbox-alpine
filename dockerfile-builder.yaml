@@ -222,8 +222,8 @@ config:
     - title: "Configure nfs exports"
       commands:
         - echo "" > /etc/exports
-        - echo "${BUILD_PATHS_BINARIES_FOLDER} $CONFIG_NFS_IP_PERMITTED(rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
-        - echo "${HOME} $CONFIG_NFS_IP_PERMITTED(rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+        - echo "${BUILD_PATHS_BINARIES_FOLDER} $CONFIG_NFS_IP_PERMITTED(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+        - echo "${HOME} $CONFIG_NFS_IP_PERMITTED(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
         - /usr/sbin/exportfs -rv
 #
 # Test
