@@ -222,8 +222,10 @@ config:
     - title: "Configure nfs exports"
       commands:
         - echo "" > /etc/exports
-        - echo "${BUILD_PATHS_BINARIES_FOLDER} $CONFIG_NFS_IP_PERMITTED(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
-        - echo "${HOME} $CONFIG_NFS_IP_PERMITTED(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+        #- echo "${BUILD_PATHS_BINARIES_FOLDER} $CONFIG_NFS_IP_PERMITTED(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+        - echo "${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+        #- echo "${HOME} $CONFIG_NFS_IP_PERMITTED(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+        - echo "${HOME} *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
         - /usr/sbin/exportfs -rv
 #
 # Test
@@ -272,8 +274,11 @@ test:
     # 
     - title: "Tests"
       commands:
-        - mkdir -p /tmp/test_mount
-        - "sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/usr/local/bin /tmp/test_mount"
-        - PATH="$PATH:/tmp/test_mount"
+        - mkdir -p /tmp/test_mount_binaries
+        - mkdir -p /tmp/test_mount_home
+        - "sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_binaries"
+        - "sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_home"
+        - ls -al /tmp/test_mount_home
+        - PATH="$PATH:/tmp/test_mount_binaries"
         - n98-magerun.phar
         - kubectcl version --client
