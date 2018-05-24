@@ -32,7 +32,7 @@ MAIN_CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 if [ -z $MAIN_CONTAINER_IMAGE ]; then
     MAIN_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
 fi
-MAIN_CONTAINER_COMMAND="sleep 99999"
+MAIN_CONTAINER_COMMAND="/usr/bin/pause"
 
 NFS_CONTAINER_RUN_AS_PRIVILIGED=${NFS_CONTAINER_RUN_AS_PRIVILIGED:0}
 NFS_CONTAINER_NAME="toolbox_nfs_server"
@@ -118,6 +118,7 @@ function toolboxctl::restart_nfs_server(){
 
 function toolboxctl::init_container(){
     toolboxctl::remove_container
+    
 	[[ $MAIN_CONTAINER_RUN_AS_PRIVILIGED = 1 ]] && MAIN_CONTAINER_USER="--privileged"
 	docker run $MAIN_CONTAINER_MODE --name "$MAIN_CONTAINER_NAME" \
         --cap-add SYS_ADMIN $MAIN_CONTAINER_USER \

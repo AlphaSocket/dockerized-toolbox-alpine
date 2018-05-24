@@ -8,7 +8,7 @@ set -e
 docker-config
 
 echo "### Starting container service"
-tini /usr/bin/nfsd.sh
+tini /usr/local/bin/nfsd
 
 # Container command is failed if exiting here
 exit $?
