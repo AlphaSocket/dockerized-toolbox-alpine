@@ -255,7 +255,9 @@ test:
                -d --name=$TEST_CONTAINER_NAME
                 --cap-add SYS_ADMIN
                 --net host 
-                -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock 
+                -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock
+                -e NFS_EXPORT_0="${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+                -e NFS_EXPORT_1="$HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
                 -e HOME=$HOME -w $PWD 
                 ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION} /usr/bin/nfsd.sh
            )
