@@ -231,10 +231,10 @@ test:
                 --cap-add SYS_ADMIN
                 --net host
                 -u $(id -u):$(getent group docker | cut -d: -f3)
-                -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock
+                -v \$HOME:\$HOME -v /var/run/docker.sock:/var/run/docker.sock
                 -e NFS_EXPORT_0="${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
-                -e NFS_EXPORT_1="$HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
-                -e HOME=$HOME -w $PWD 
+                -e NFS_EXPORT_1="\$HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+                -e HOME=\$HOME -w \$PWD 
                 ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION} /usr/bin/nfsd.sh
            )'
         - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
