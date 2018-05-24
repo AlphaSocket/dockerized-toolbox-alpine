@@ -4,17 +4,20 @@
 #
 set -e
 
-touch /tmp/container_status
-if [ ! -f "/tmp/container_status" ];
-then
+touch /tmp/container_status;
+if [ ! -f "/tmp/container_status" ]; then
     echo "Error: Can't create container_status file /tmp/container_status";
     exit 1;
 fi
 
-echo "### Starting container configuration"
-echo "configuring" > /tmp/container_status
-
 #
+# User configuration
+#
+if [ "$EUID" -ne 0 ]; then
+    echo "User configuration skipped"
+else
+    echo "user_configuration" > /tmp/container_status
+    #
 # Setting up container users and groups
 #
 for KIND in "MAIN" "ADDITIONAL"
@@ -54,18 +57,26 @@ do
     fi
     
 done
+fi
 
 #
 # Run custom configurations
 #
+echo "### Starting container configuration"
+echo "configuring" > /tmp/container_status
 for config_script in /usr/local/bin/config/*; 
 do
     $config_script 1>/dev/stdout 2>/dev/stderr; 
 done;
 
-echo "hardening" > /tmp/container_status
-
 #
+# Hardening
+#
+if [ "$EUID" -ne 0 ]; then
+    echo "Current user is not root. Hardening skipped"
+else
+    echo "hardening" > /tmp/container_status
+    #
 # HARDENING
 # Remove unused users
 #
@@ -77,6 +88,7 @@ do
         deluser "$UNUSED_USER";
     fi;
 done
+fi
 
 # End configuration
 echo "### Finished container configuration"
