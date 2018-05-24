@@ -55,7 +55,7 @@ else
     exit 1
 fi
 
-MASTER_COMMIT_MESSAGE=$(cat .git/COMMIT_EDITMSG | grep -v '^#' | xargs)
+MASTER_COMMIT_MESSAGE="$(cat .git/COMMIT_EDITMSG | grep -v '^#' | xargs -0 )"   
 
 #
 # Deploy in other branches
