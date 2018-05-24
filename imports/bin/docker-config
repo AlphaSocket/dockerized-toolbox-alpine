@@ -3,6 +3,7 @@
 # Run all configuration scripts
 #
 set -e
+EUID=$(id -u)
 
 touch /tmp/container_status;
 if [ ! -f "/tmp/container_status" ]; then
