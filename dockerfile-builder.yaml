@@ -13,16 +13,17 @@ build:
     name: *project_codename
     ports:
       main: 2049
-    cmd: "/usr/bin/nfsd.sh"
+    cmd:
+      valueFromParse: ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
     # Varni
     paths:
       bash_completitions: $HOME/.bash_completion.d
       binaries:
         folder: /usr/local/bin
   imports:
-    - imports/nfsd.sh:/usr/bin/nfsd.sh
-    - imports/confd-binary:/usr/bin/confd
-    - imports/confd:/etc/confd
+    #- imports/nfsd.sh:/usr/bin/nfsd.sh
+    #- imports/confd-binary:/usr/bin/confd
+    #- imports/confd:/etc/confd
     - imports/pause:/usr/local/bin/pause
 
 #
@@ -145,14 +146,14 @@ setup:
         - mkdir /tmp/op
         - curl -fsSL https://cache.agilebits.com/dist/1P/op/pkg/v0.4/op_linux_amd64_v0.4.zip -o /tmp/op/op.zip
         - unzip /tmp/op/op.zip -d /tmp/op
-        - mv /tmp/op/op /usr/local/bin/op
+        - mv /tmp/op/op ${BUILD_PATHS_BINARIES_FOLDER}/op
         - rm -r /tmp/op
         
         # Browser stack
         - mkdir /tmp/browserstack
         - curl -fsSL https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip -o /tmp/browserstack/BrowserStackLocal.zip
         - unzip /tmp/browserstack/BrowserStackLocal.zip -d /tmp/browserstack
-        - mv /tmp/browserstack/BrowserStackLocal /usr/local/bin/BrowserStackLocal
+        - mv /tmp/browserstack/BrowserStackLocal ${BUILD_PATHS_BINARIES_FOLDER}/BrowserStackLocal
         - rm -r /tmp/browserstack
         
         # Mysql
@@ -162,21 +163,27 @@ setup:
         - curl -fsSL https://gist.githubusercontent.com/AlphaSocket/f139f80f6fd3bf2ff155ced0b81ce616/raw/196bf78149c308fe6d687926c09e73052656dc6f/node-get-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-get-dependencies
         - curl -fsSL https://gist.githubusercontent.com/AlphaSocket/9780449ae2e3222e580d672f9aed68ae/raw/4c9877313f45d27ebdcd66c87e602d9302e8cbbd/node-link-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-link-dependencies
         
-        # Final config
-        - chmod -R +x /usr/local/bin
-        
         # Configure NFS server
-        - chmod +x /usr/bin/nfsd.sh 
-        - chmod +x /usr/bin/confd
-        - mkdir -p /var/lib/nfs/rpc_pipefs
-        - mkdir -p /var/lib/nfs/v4recovery 
-        - echo "rpc_pipefs    /var/lib/nfs/rpc_pipefs rpc_pipefs      defaults        0       0" >> /etc/fstab
-        - echo "nfsd          /proc/fs/nfsd           nfsd            defaults        0       0" >> /etc/fstab
+        #- chmod +x /usr/bin/nfsd.sh 
+        #- chmod +x /usr/bin/confd
+        #- mkdir -p /var/lib/nfs/rpc_pipefs
+        #- mkdir -p /var/lib/nfs/v4recovery 
+        #- echo "rpc_pipefs    /var/lib/nfs/rpc_pipefs rpc_pipefs      defaults        0       0" >> /etc/fstab
+        #- echo "nfsd          /proc/fs/nfsd           nfsd            defaults        0       0" >> /etc/fstab
         
-        - CONFIG_NFS_SHARED_DIRECTORY=${BUILD_PATHS_BINARIES_FOLDER}
-        - CONFIG_NFS_IP_PERMITTED="127.0.0.1,10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*"
-        - CONFIG_SYNC='sync'
+        #- CONFIG_NFS_SHARED_DIRECTORY=${BUILD_PATHS_BINARIES_FOLDER}
+        #- CONFIG_NFS_IP_PERMITTED="127.0.0.1,10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*"
+        #- CONFIG_SYNC='sync'
         #- /usr/bin/confd -onetime
+        
+        - curl -fsSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+        - mkdir -p /var/lib/nfs/rpc_pipefs 
+        - mkdir -p /var/lib/nfs/v4recovery 
+        - echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab 
+        - echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
+        
+        # Final config
+        - chmod -R +x ${BUILD_PATHS_BINARIES_FOLDER}
         
 config:
   envvars:
@@ -219,14 +226,15 @@ config:
     #
     # NFS
     #
-    - title: "Configure nfs exports"
-      commands:
-        - echo "" > /etc/exports
-        #- echo "${BUILD_PATHS_BINARIES_FOLDER} $CONFIG_NFS_IP_PERMITTED(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
-        - echo "${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
-        #- echo "${HOME} $CONFIG_NFS_IP_PERMITTED(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
-        - echo "${HOME} *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
-        - /usr/sbin/exportfs -rv
+    #- title: "Configure nfs exports"
+    #  commands:
+    #    #- echo "${BUILD_PATHS_BINARIES_FOLDER} $CONFIG_NFS_IP_PERMITTED(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+    #    #- echo "${HOME} $CONFIG_NFS_IP_PERMITTED(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+    #    
+    #    - echo "" > /etc/exports
+    #    - echo "${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+    #    - echo "${HOME} *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" >> /etc/exports
+    #    - /usr/sbin/exportfs -rv
 #
 # Test
 #
@@ -246,7 +254,8 @@ test:
         - TEST_CONTAINER_MAIN_ID=$(
              docker run
                -d --name=$TEST_CONTAINER_NAME
-                --privileged --net host 
+                --cap-add SYS_ADMIN
+                --net host 
                 -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock 
                 -e HOME=$HOME -w $PWD 
                 ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION} /usr/bin/nfsd.sh
