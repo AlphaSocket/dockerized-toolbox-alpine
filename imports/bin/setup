@@ -8,72 +8,8 @@ apk add --no-cache tini curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $
 
 # Install extra binaries
 echo "### Install extra binaries..."
-pip install --upgrade pip
-curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
-mkdir /tmp/hgflow
-tar -xvjf /tmp/hgflow-installer.tar.bz2 -C /tmp/hgflow/
-mv /tmp/hgflow/hgflow.py ${BUILD_PATHS_BINARIES_FOLDER}/hgflow.py
-rm -rf /tmp/hgflow
-curl -fsSL https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -o /tmp/gitflow-installer.sh
-chmod +x /tmp/gitflow-installer.sh
-/tmp/gitflow-installer.sh
-rm /tmp/gitflow-installer.sh
-curl -fsSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o ${BUILD_PATHS_BINARIES_FOLDER}/git-get-latest-release
-chmod +x ${BUILD_PATHS_BINARIES_FOLDER}/git-get-latest-release
-curl -fsSL https://phar.phpunit.de/phpunit.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpunit.phar
-curl -fsSL http://static.phpmd.org/php/latest/phpmd.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpmd.phar
-curl -fsSL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpcs.phar
-curl -fsSL https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpcbf.phar
-curl -fsSL http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/php-cs-fixer.phar
-curl -fsSL https://getcomposer.org/composer.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/composer.phar
-curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/wp-cli.phar
-curl -fsSL https://files.magerun.net/n98-magerun-latest.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/n98-magerun.phar
-curl -fsSL https://raw.githubusercontent.com/mhauri/generate-modman/master/generate-modman -o ${BUILD_PATHS_BINARIES_FOLDER}/generate-modman
-curl -fsSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o ${BUILD_PATHS_BINARIES_FOLDER}/modman
-MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
-curl -fsSL https://github.com/punkstar/mageconfigsync/releases/download/${MAGECONFIGSYNC_LATEST}/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/mageconfigsync.phar
-MAGESCAN_LATEST=$(git-get-latest-release https://github.com/steverobbins/magescan )
-curl -fsSL https://github.com/steverobbins/magescan/releases/download/${MAGESCAN_LATEST}/magescan.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/magescan.phar
-pip install mwscan
-pip install docker-compose
-curl https://moncho.github.io/dry/dryup.sh | sh
-pip install awscli
-GCLOUD_VERSION="199.0.0"
-curl -fsSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz -o /tmp/google-cloud-sdk-linux-x86_64.tar.gz
-tar xf /tmp/google-cloud-sdk-linux-x86_64.tar.gz -C /usr/local/lib/
-ln -s /usr/local/lib/google-cloud-sdk/bin/* /usr/local/bin/
-rm /tmp/google-cloud-sdk-linux-x86_64.tar.gz
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 curl -fsSL https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_LATEST}/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
-HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ )
-mkdir /tmp/helm
-curl -fsSL https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz -o /tmp/helm/helm.tar.gz
-tar -xvf /tmp/helm/helm.tar.gz -C /tmp/helm/
-mv /tmp/helm/linux-amd64/helm ${BUILD_PATHS_BINARIES_FOLDER}/helm
-KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )
-curl -fsSL https://github.com/kubernetes/kops/releases/download/${KOPS_LATEST}/kops-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kops
-ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
-curl -fsSL https://github.com/argoproj/argo/releases/download/${ARGO_LATEST}/argo-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/argo
-KOMPOSE_LATEST=$(git-get-latest-release https://github.com/kubernetes/kompose )
-curl -L https://github.com/kubernetes/kompose/releases/download/${KOMPOSE_LATEST}/kompose-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kompose
-MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
-curl -fsSL https://storage.googleapis.com/minikube/releases/${MINIKUBE_LATEST}/minikube-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/minikube
-git -C /usr/local/lib/ clone https://github.com/Alphasocket/kubeadm-dind-cluster
-ln -s /usr/local/lib/kubeadm-dind-cluster/dind-cluster.sh ${BUILD_PATHS_BINARIES_FOLDER}/dind-cluster.sh
-ln -s /usr/local/lib/kubeadm-dind-cluster/clusterctl ${BUILD_PATHS_BINARIES_FOLDER}/clusterctl
-mkdir /tmp/op
-curl -fsSL https://cache.agilebits.com/dist/1P/op/pkg/v0.4/op_linux_amd64_v0.4.zip -o /tmp/op/op.zip
-unzip /tmp/op/op.zip -d /tmp/op
-mv /tmp/op/op ${BUILD_PATHS_BINARIES_FOLDER}/op
-rm -r /tmp/op
-mkdir /tmp/browserstack
-curl -fsSL https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip -o /tmp/browserstack/BrowserStackLocal.zip
-unzip /tmp/browserstack/BrowserStackLocal.zip -d /tmp/browserstack
-mv /tmp/browserstack/BrowserStackLocal ${BUILD_PATHS_BINARIES_FOLDER}/BrowserStackLocal
-rm -r /tmp/browserstack
-curl -fsSL https://gist.githubusercontent.com/AlphaSocket/e681bc0c087e6b4e1f6d4f8881f2ac5e/raw/081d1d28dc3b352582f2b9805db46cf055d67a6e/mysql-dump-all-db-here -o ${BUILD_PATHS_BINARIES_FOLDER}/mysql-dump-all-db-here
-curl -fsSL https://gist.githubusercontent.com/AlphaSocket/f139f80f6fd3bf2ff155ced0b81ce616/raw/196bf78149c308fe6d687926c09e73052656dc6f/node-get-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-get-dependencies
-curl -fsSL https://gist.githubusercontent.com/AlphaSocket/9780449ae2e3222e580d672f9aed68ae/raw/4c9877313f45d27ebdcd66c87e602d9302e8cbbd/node-link-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-link-dependencies
 curl -fsSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
 mkdir -p /var/lib/nfs/rpc_pipefs
 mkdir -p /var/lib/nfs/v4recovery
