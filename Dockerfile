@@ -58,21 +58,21 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-entrypoint /usr/local/bin/docker-entrypoint
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1527204834
-ADD imports/bin/config /usr/local/bin/config/1527204834
+ADD imports/bin/setup /usr/local/bin/setup/1527205570
+ADD imports/bin/config /usr/local/bin/config/1527205570
 ADD imports/pause /usr/local/bin/pause
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1527204834 && \
+    /usr/local/bin/setup/1527205570 && \
     ${BUILDER_TARGETS_CONTAINER_HARDEN}
 
 EXPOSE 2049 
 
 
-ENTRYPOINT ["docker-entrypoint"]
-CMD ["/usr/local/bin/docker-entrypoint"]
+ENTRYPOINT ["tini", "--"]
+CMD ["docker-entrypoint"]
 
 LABEL \
     org.label-schema.vcs-ref="$BUILD_COMMIT" \
