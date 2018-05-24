@@ -17,7 +17,7 @@ build:
       valueFromParse: ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
     # Varni
     paths:
-      bash_completitions: $HOME/.bash_completion.d
+      bash_completitions: "$HOME/.bash_completion.d"
       binaries:
         folder: /usr/local/bin
   imports:
@@ -188,6 +188,7 @@ config:
     ##
     - title: "Add Bash completitions"
       commands:
+        - BUILD_PATHS_BASH_COMPLETITIONS="$HOME/.bash_completion.d"
         - mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/
     #    - curl -fsSl https://raw.githubusercontent.com/netz98/n98-magerun/master/res/autocompletion/bash/n98-magerun.phar.bash -o ${BUILD_PATHS_BASH_COMPLETITIONS}/n98-magerun
     #    - curl -fsSl https://raw.githubusercontent.com/iArren/composer-bash-completion/master/composer -o ${BUILD_PATHS_BASH_COMPLETITIONS}/composer

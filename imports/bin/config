@@ -5,6 +5,7 @@ set -e
 
 # Add Bash completitions
 echo "### Add Bash completitions..."
+BUILD_PATHS_BASH_COMPLETITIONS="$HOME/.bash_completion.d"
 mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/
 
 
