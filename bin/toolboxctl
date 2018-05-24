@@ -9,7 +9,7 @@
 set -e
 
 USER_ID=$(id -u)
-GROUP_ID=$(cut -d: -f3 < <(getent group docker))
+GROUP_ID=$(getent group docker | cut -d: -f3)
 HOST_PORT_NFS=2049
 
 PROJECTS_PATH="${HOME}/Projects"

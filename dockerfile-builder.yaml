@@ -255,7 +255,7 @@ test:
                -d --name=$TEST_CONTAINER_NAME
                 --cap-add SYS_ADMIN
                 --net host
-                -u $(id -u):$(cut -d: -f3 < <(getent group docker))
+                -u $(id -u):$(getent group docker | cut -d: -f3)
                 -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock
                 -e NFS_EXPORT_0="${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
                 -e NFS_EXPORT_1="$HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
