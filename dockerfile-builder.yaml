@@ -239,7 +239,7 @@ test:
         - 'TEST_CONTAINER_MAIN_ID=$(
              docker run
                -d --name=$TEST_CONTAINER_NAME
-                --cap-add SYS_ADMIN
+                --privileged
                 --net host
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
