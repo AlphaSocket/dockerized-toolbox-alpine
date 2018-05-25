@@ -50,6 +50,9 @@ setup:
       #  - curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php-alpine.rsa.pub
       #  - echo '@php7_2 https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
       #  - apk add --no-cache $SETUP_DEPENDENCIES_PHP7_2
+    - title: "Setup export file"
+      commands:
+        - chmod 766 /etc/exports
         
     - title: "Install extra binaries"
       commands:
