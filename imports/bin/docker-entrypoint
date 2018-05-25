@@ -100,10 +100,10 @@ echo "### Finished container configuration"
 echo "ready" > /tmp/container_status
 
 #
-# Service
+# CMD
 #
-echo "### Starting container service"
-/usr/local/bin/nfsd
+echo "### Starting container cmd"
+exec $@
 
 # Container command is failed if exiting here
 exit $?
