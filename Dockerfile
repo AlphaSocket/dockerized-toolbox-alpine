@@ -28,7 +28,7 @@ ENV \
 	BUILD_NAME="toolbox-alpine" \
 	BUILD_PORTS_ADDITIONAL="" \
 	BUILD_PORTS_MAIN="2049" \
-	BUILD_CMD="/usr/local/bin/pause" \
+	BUILD_CMD="/usr/local/bin/nfsd" \
 	BUILD_PATHS_BASH_COMPLETITIONS="$HOME/.bash_completion.d" \
 	BUILD_PATHS_BINARIES_FOLDER="/usr/local/bin" \
 	SETUP_PATHS_BINARIES="/usr/local/bin" \
@@ -59,21 +59,21 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-entrypoint /usr/local/bin/docker-entrypoint
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1527270591
-ADD imports/bin/config /usr/local/bin/config/1527270591
+ADD imports/bin/setup /usr/local/bin/setup/1527271569
+ADD imports/bin/config /usr/local/bin/config/1527271569
 ADD imports/pause /usr/local/bin/pause
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1527270591 && \
+    /usr/local/bin/setup/1527271569 && \
     ${BUILDER_TARGETS_CONTAINER_HARDEN}
 
 EXPOSE 2049 
 
 
 ENTRYPOINT ["tini", "--", "docker-entrypoint"]
-CMD ["/usr/local/bin/pause"]
+CMD ["/usr/local/bin/nfsd"]
 
 LABEL \
     org.label-schema.vcs-ref="$BUILD_COMMIT" \
