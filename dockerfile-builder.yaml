@@ -14,7 +14,8 @@ build:
     ports:
       main: 2049
     cmd:
-      valueFromParse: ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+      #valueFromParse: ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+      valueFromParse: ${BUILD_PATHS_BINARIES_FOLDER}/pause
     # Varni
     paths:
       bash_completitions: "$HOME/.bash_completion.d"
