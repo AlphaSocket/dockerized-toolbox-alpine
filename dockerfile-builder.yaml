@@ -165,6 +165,7 @@ setup:
         #- curl -fsSL https://gist.githubusercontent.com/AlphaSocket/9780449ae2e3222e580d672f9aed68ae/raw/4c9877313f45d27ebdcd66c87e602d9302e8cbbd/node-link-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-link-dependencies
         #
         - curl -fsSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+        - sed -i 's/#!\/usr\/bin\/env bash/#!\/bin\/bash/g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
         - mkdir -p /var/lib/nfs/rpc_pipefs 
         - mkdir -p /var/lib/nfs/v4recovery 
         - echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab 

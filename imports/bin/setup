@@ -11,6 +11,7 @@ echo "### Install extra binaries..."
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 curl -fsSL https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_LATEST}/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
 curl -fsSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+sed -i 's/#!\/usr\/bin\/env bash/#!\/bin\/bash/g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
 mkdir -p /var/lib/nfs/rpc_pipefs
 mkdir -p /var/lib/nfs/v4recovery
 echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab
