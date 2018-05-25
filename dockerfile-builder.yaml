@@ -247,7 +247,7 @@ test:
                 -e NFS_EXPORT_1="$TEST_CONTAINER_ENVVARS_HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
                 -e HOME=$TEST_CONTAINER_ENVVARS_HOME
                 -w $TEST_CONTAINER_WORKDIR
-                ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION} /usr/bin/nfsd.sh
+                ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
            )'
         - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
         - TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
