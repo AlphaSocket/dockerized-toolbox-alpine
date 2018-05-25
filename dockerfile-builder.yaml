@@ -241,7 +241,6 @@ test:
                -d --name=$TEST_CONTAINER_NAME
                 --cap-add SYS_ADMIN
                 --net host
-                #-u $(id -u):$(getent group docker | cut -d: -f3)
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
                 -e NFS_EXPORT_0="${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
