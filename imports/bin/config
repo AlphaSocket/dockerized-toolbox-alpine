@@ -5,9 +5,10 @@ set -e
 
 # Add Bash completitions
 echo "### Add Bash completitions..."
-BUILD_PATHS_BASH_COMPLETITIONS="$HOME/.bash_completion.d"
-mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/
-
+if [ $(id -u) -ne 0 ]; then
+    BUILD_PATHS_BASH_COMPLETITIONS="$HOME/.bash_completion.d";
+    mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/;
+fi
 
 
 exit 0

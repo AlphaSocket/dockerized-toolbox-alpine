@@ -6,10 +6,6 @@ echo "### Install all dependencies..."
 apk add --no-cache tini curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $SETUP_DEPENDENCIES_CONFIG $SETUP_DEPENDENCIES_RUNTIME
 
 
-# Setup export file
-echo "### Setup export file..."
-chmod 766 /etc/exports
-
 # Install extra binaries
 echo "### Install extra binaries..."
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
