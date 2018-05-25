@@ -50,9 +50,6 @@ setup:
       #  - curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php-alpine.rsa.pub
       #  - echo '@php7_2 https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
       #  - apk add --no-cache $SETUP_DEPENDENCIES_PHP7_2
-    - title: "Setup export file"
-      commands:
-        - chmod 766 /etc/exports
         
     - title: "Install extra binaries"
       commands:
@@ -190,6 +187,7 @@ config:
     ## Bash completitions
     ##
     - title: "Add Bash completitions"
+      shell_condition: $(id -u) -ne 0
       commands:
         - BUILD_PATHS_BASH_COMPLETITIONS="$HOME/.bash_completion.d"
         - mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/
@@ -243,7 +241,7 @@ test:
                -d --name=$TEST_CONTAINER_NAME
                 --cap-add SYS_ADMIN
                 --net host
-                -u $(id -u):$(getent group docker | cut -d: -f3)
+                #-u $(id -u):$(getent group docker | cut -d: -f3)
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
                 -e NFS_EXPORT_0="${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
