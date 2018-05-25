@@ -27,7 +27,19 @@ This docker image will contain all required cli tools for security/development/t
   + libtool
   + flex
 - Runtime dependencies:
-  + $SETUP_DEPENDENCIES_UTILITIES
+  + bash
+  + unzip
+  + jq
+  + htop
+  + git
+  + mercurial
+  + gnupg
+  + man
+  + man-pages
+  + fcgi
+  + openssh-client
+  + ansible
+  + file
   + $SETUP_DEPENDENCIES_OP
   + $SETUP_DEPENDENCIES_PHP
   + $SETUP_DEPENDENCIES_NODE

@@ -36,8 +36,9 @@ ENV \
 	SETUP_PATHS_CONFIG="/usr/local/bin/config" \
 	SETUP_DEPENDENCIES_CONFIG="" \
 	SETUP_DEPENDENCIES_SETUP="gcc py-setuptools openssl-dev jansson-dev python-dev build-base libc-dev file-dev automake autoconf libtool flex" \
+	SETUP_DEPENDENCIES_UTILITIES="bash unzip jq htop git mercurial gnupg man man-pages fcgi openssh-client ansible file" \
 	SETUP_DEPENDENCIES_NFSD="nfs-utils iproute2" \
-	SETUP_DEPENDENCIES_RUNTIME="$SETUP_DEPENDENCIES_UTILITIES $SETUP_DEPENDENCIES_OP $SETUP_DEPENDENCIES_PHP $SETUP_DEPENDENCIES_NODE $SETUP_DEPENDENCIES_PYTHON $SETUP_DEPENDENCIES_DB $SETUP_DEPENDENCIES_GOOGLE nfs-utils iproute2" \
+	SETUP_DEPENDENCIES_RUNTIME="bash unzip jq htop git mercurial gnupg man man-pages fcgi openssh-client ansible file $SETUP_DEPENDENCIES_OP $SETUP_DEPENDENCIES_PHP $SETUP_DEPENDENCIES_NODE $SETUP_DEPENDENCIES_PYTHON $SETUP_DEPENDENCIES_DB $SETUP_DEPENDENCIES_GOOGLE nfs-utils iproute2" \
 	CONFIG_GROUPS_MAIN_ID="1000" \
 	CONFIG_GROUPS_MAIN_NAME="docker" \
 	CONFIG_GROUPS_ADDITIONAL_ID="1001" \
@@ -58,14 +59,14 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-entrypoint /usr/local/bin/docker-entrypoint
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1527270330
-ADD imports/bin/config /usr/local/bin/config/1527270330
+ADD imports/bin/setup /usr/local/bin/setup/1527270591
+ADD imports/bin/config /usr/local/bin/config/1527270591
 ADD imports/pause /usr/local/bin/pause
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1527270330 && \
+    /usr/local/bin/setup/1527270591 && \
     ${BUILDER_TARGETS_CONTAINER_HARDEN}
 
 EXPOSE 2049 
