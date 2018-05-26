@@ -89,6 +89,9 @@ do
         deluser "$UNUSED_USER";
     fi;
 done
+
+rm -rf /var/cache/apk/* /tmp/* 
+rm -f /sbin/halt /sbin/poweroff /sbin/reboot
 fi
 
 # End configuration

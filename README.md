@@ -1,6 +1,6 @@
 # alphasocket/dockerized-toolbox-alpine
 #### toolbox-alpine
-This docker image will contain all required cli tools for security/development/testing operations
+This docker image will contain all required cli tools for security/development/testing operations Included an nfs server to mount persistent volumes from the home directory see http://wiki.linux-nfs.org/wiki/index.php/Nfsv4_configuration 
 
 
 | [![Build Status](https://semaphoreci.com/api/v1/alphasocket/dockerized-toolbox-alpine/branches/latest/badge.svg)](https://semaphoreci.com/alphasocket/dockerized-toolbox-alpine) | Size / Layers | Version |

@@ -1,7 +1,9 @@
 project: 
   title: &project_title alphasocket/dockerized-toolbox-alpine
   codename: &project_codename toolbox-alpine
-  description: "This docker image will contain all required cli tools for security/development/testing operations"
+  description: "This docker image will contain all required cli tools for security/development/testing operations
+  Included an nfs server to mount persistent volumes from the home directory see http://wiki.linux-nfs.org/wiki/index.php/Nfsv4_configuration
+  "
 
 #
 # Build process
