@@ -52,7 +52,12 @@ setup:
       #  - apk add --no-cache $SETUP_DEPENDENCIES_PHP7_2
     - title: "Setup export file"
       commands:
-        - chmod 766 /etc/exports
+        - mkdir -p /var/lib/nfs/v4recovery
+        - mkdir -p /var/lib/nfs/rpc_pipefs 
+        - chmod 766 /etc/exports 
+        - chmod 766 /var/lib/nfs/rpc_pipefs 
+        - chmod 766 /var/lib/nfs/v4recovery
+        
         
     - title: "Install extra binaries"
       commands:
@@ -213,10 +218,10 @@ config:
     #    - gcloud config set metrics/environment github_docker_image
     #
     
-    - title: "Create folders"
-      commands:
-        - mkdir -p /var/lib/nfs/rpc_pipefs 
-        - mkdir -p /var/lib/nfs/v4recovery 
+    #- title: "Create folders"
+    #  commands:
+    #    - mkdir -p /var/lib/nfs/rpc_pipefs 
+    #    - mkdir -p /var/lib/nfs/v4recovery 
 #
 # Test
 #
