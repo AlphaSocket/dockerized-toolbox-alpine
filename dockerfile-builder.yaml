@@ -65,6 +65,9 @@ setup:
         
     - title: "Install extra binaries"
       commands:
+        - mkdir -p "${BUILD_PATHS_BINARIES_FOLDER}"
+        - mkdir -p "${BUILD_PATHS_LIBRARIES_FOLDER}"
+        
         # Python
         - pip install --upgrade pip
         

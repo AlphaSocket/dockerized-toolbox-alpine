@@ -8,6 +8,8 @@ apk add --no-cache tini curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $
 
 # Install extra binaries
 echo "### Install extra binaries..."
+mkdir -p "${BUILD_PATHS_BINARIES_FOLDER}"
+mkdir -p "${BUILD_PATHS_LIBRARIES_FOLDER}"
 pip install --upgrade pip
 curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
 mkdir /tmp/hgflow
