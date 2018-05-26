@@ -40,12 +40,48 @@ This docker image will contain all required cli tools for security/development/t
   + openssh-client
   + ansible
   + file
-  + $SETUP_DEPENDENCIES_OP
-  + $SETUP_DEPENDENCIES_PHP
-  + $SETUP_DEPENDENCIES_NODE
-  + $SETUP_DEPENDENCIES_PYTHON
-  + $SETUP_DEPENDENCIES_DB
-  + $SETUP_DEPENDENCIES_GOOGLE
+  + libc6-compat
+  + php7
+  + php7-curl
+  + php7-dom
+  + php7-gd
+  + php7-ctype
+  + php7-gettext
+  + php7-iconv
+  + php7-json
+  + php7-mbstring
+  + php7-mcrypt
+  + php7-mysqli
+  + php7-opcache
+  + php7-openssl
+  + php7-pdo
+  + php7-pdo_dblib
+  + php7-pdo_mysql
+  + php7-pdo_pgsql
+  + php7-pdo_sqlite
+  + php7-pear
+  + php7-pgsql
+  + php7-phar
+  + php7-posix
+  + php7-session
+  + php7-soap
+  + php7-sockets
+  + php7-sqlite3
+  + php7-xml
+  + php7-simplexml
+  + php7-zip
+  + php7-zlib
+  + nodejs
+  + nodejs-npm
+  + python
+  + python3
+  + py-pip
+  + py-psutil
+  + mysql-client
+  + redis
+  + py-crcmod
+  + libc6-compat
+  + openssh-client
   + nfs-utils
   + iproute2
 
