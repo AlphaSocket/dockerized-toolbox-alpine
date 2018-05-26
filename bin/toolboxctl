@@ -102,8 +102,10 @@ function toolboxctl::start_nfs_server(){
         --privileged \
         -v $HOME:$HOME \
         -e NFS_DISABLE_VERSION_3='true' \
-        -e NFS_EXPORT_0="/usr/local/bin *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
-        -e NFS_EXPORT_1="$HOME/var/data/ *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
+        -e NFS_EXPORT_0="$HOME *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
+        -e NFS_EXPORT_1="$HOME/var/data/ *(rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
+        -e NFS_EXPORT_2="/usr/local/lib *(fsid=1,ro,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
+        -e NFS_EXPORT_3="/usr/local/lib/hg *(ro,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
         -e HOME=$HOME \
         -w $PWD \
         $NFS_CONTAINER_IMAGE \
