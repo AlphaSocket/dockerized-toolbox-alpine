@@ -279,7 +279,7 @@ test:
                 --cap-add SYSLOG
                 --cap-add WAKE_ALARM
                 --cap-add BLOCK_SUSPEND
-                --cap-add AUDIT_READ+EIP
+                --cap-add AUDIT_READ
                 --net host
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
