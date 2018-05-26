@@ -9,11 +9,6 @@ if [ $(id -u) -ne 0 ]; then
     BUILD_PATHS_BASH_COMPLETITIONS="$HOME/.bash_completion.d";
     mkdir -p ${BUILD_PATHS_BASH_COMPLETITIONS}/;
 fi
-# Create folders
-echo "### Create folders..."
-mkdir -p /var/lib/nfs/rpc_pipefs
-mkdir -p /var/lib/nfs/v4recovery
-
 
 
 exit 0

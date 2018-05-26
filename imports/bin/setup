@@ -8,7 +8,11 @@ apk add --no-cache tini curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $
 
 # Setup export file
 echo "### Setup export file..."
+mkdir -p /var/lib/nfs/v4recovery
+mkdir -p /var/lib/nfs/rpc_pipefs
 chmod 766 /etc/exports
+chmod 766 /var/lib/nfs/rpc_pipefs
+chmod 766 /var/lib/nfs/v4recovery
 
 # Install extra binaries
 echo "### Install extra binaries..."
