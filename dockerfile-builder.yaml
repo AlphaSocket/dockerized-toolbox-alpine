@@ -21,6 +21,8 @@ build:
       bash_completitions: "$HOME/.bash_completion.d"
       binaries:
         folder: /usr/local/bin
+      libraries:
+        folder: /usr/local/lib
   imports:
     #- imports/nfsd.sh:/usr/bin/nfsd.sh
     #- imports/confd-binary:/usr/bin/confd
@@ -52,14 +54,14 @@ setup:
       #  - curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php-alpine.rsa.pub
       #  - echo '@php7_2 https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
       #  - apk add --no-cache $SETUP_DEPENDENCIES_PHP7_2
-    - title: "Setup export file"
-      commands:
-        - mkdir -p /var/lib/nfs/v4recovery
-        - mkdir -p /var/lib/nfs/rpc_pipefs 
-        - chmod 766 /etc/exports 
-        - chmod 766 /var/lib/nfs/rpc_pipefs 
-        - chmod 766 /var/lib/nfs/v4recovery
-        
+    #- title: "Setup export file"
+    #  commands:
+    #    - mkdir -p /var/lib/nfs/v4recovery
+    #    - mkdir -p /var/lib/nfs/rpc_pipefs 
+    #    - chmod 766 /etc/exports 
+    #    - chmod 766 /var/lib/nfs/rpc_pipefs 
+    #    - chmod 766 /var/lib/nfs/v4recovery
+    #    
         
     - title: "Install extra binaries"
       commands:
@@ -70,7 +72,7 @@ setup:
         - curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
         - mkdir /tmp/hgflow
         - tar -xvjf /tmp/hgflow-installer.tar.bz2 -C /tmp/hgflow/
-        - mv /tmp/hgflow/hgflow.py ${BUILD_PATHS_BINARIES_FOLDER}/hgflow.py
+        - mv /tmp/hgflow/hgflow.py ${BUILD_PATHS_LIBRARIES_FOLDER}/hg/flow.py
         - rm -rf /tmp/hgflow
         
         - curl -fsSL https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -o /tmp/gitflow-installer.sh
@@ -249,13 +251,38 @@ test:
              docker run
                -d --name=$TEST_CONTAINER_NAME
                 --cap-add SYS_ADMIN
-                --cap-add SYS_MODULE
                 --cap-add NET_ADMIN
+                --cap-add SYS_MODULE
+                --cap-add SYS_ADMIN
+                --cap-add DAC_READ_SEARCH
+                --cap-add LINUX_IMMUTABLE
+                --cap-add IPC_LOCK
+                --cap-add IPC_OWNER
+                --cap-add SYS_RAWIO
+                --cap-add SYS_CHROOT
+                --cap-add SYS_PTRACE
+                --cap-add SYS_PACCT
+                --cap-add SYS_BOOT
+                --cap-add SYS_NICE
+                --cap-add SYS_RESOURCE
+                --cap-add SYS_TIME
+                --cap-add SYS_TTY_CONFIG
+                --cap-add MKNOD
+                --cap-add LEASE
+                --cap-add AUDIT_CONTROL
+                --cap-add SETFCAP
+                --cap-add MAC_OVERRIDE
+                --cap-add MAC_ADMIN
+                --cap-add SYSLOG
+                --cap-add WAKE_ALARM
+                --cap-add BLOCK_SUSPEND
+                --cap-add AUDIT_READ+EIP
                 --net host
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
-                -e NFS_EXPORT_0="${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
-                -e NFS_EXPORT_1="$TEST_CONTAINER_ENVVARS_HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+                -e NFS_DISABLE_VERSION_3=1
+                -e NFS_EXPORT_0="${TEST_CONTAINER_ENVVARS_HOME}  *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+                -e NFS_EXPORT_1="${BUILD_PATHS_LIBRARIES_FOLDER} *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
                 -e HOME=$TEST_CONTAINER_ENVVARS_HOME
                 -w $TEST_CONTAINER_WORKDIR
                 ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
@@ -283,7 +310,7 @@ test:
     # 
     - title: "Tests"
       commands:
-        - mkdir -p /tmp/test_mount_binaries
-        - "sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_binaries"
-        - PATH="$PATH:/tmp/test_mount_binaries"
+        - mkdir -p /tmp/test_mount_home
+        - "sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_home"
+        - PATH="$PATH:/tmp/test_mount_home/bin"
         - kubectl version --client

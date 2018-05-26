@@ -32,15 +32,14 @@ MAIN_CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 if [ -z $MAIN_CONTAINER_IMAGE ]; then
     MAIN_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
 fi
-MAIN_CONTAINER_COMMAND="/usr/bin/pause"
+MAIN_CONTAINER_COMMAND="/usr/local/bin/pause"
 
 NFS_CONTAINER_RUN_AS_PRIVILIGED=${NFS_CONTAINER_RUN_AS_PRIVILIGED:0}
 NFS_CONTAINER_NAME="toolbox_nfs_server"
 NFS_CONTAINER_MODE="-d"
 NFS_CONTAINER_PORT=2049
-NFS_CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 NFS_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
-NFS_CONTAINER_COMMAND="/usr/bin/nfsd.sh"
+NFS_CONTAINER_COMMAND="/usr/local/bin/nfsd"
 
 # Globals
 log() {
@@ -97,14 +96,19 @@ function toolboxctl::start_nfs_server(){
     
     #docker run -d --name toolbox_nfs_server --privileged -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
     #docker run -d --name toolbox_nfs_server --cap-add=NET_ADMIN -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
-	docker run -d $NFS_CONTAINER_MODE \
+	docker run $NFS_CONTAINER_MODE \
         --name "$NFS_CONTAINER_NAME" \
-        --net host --cap-add SYS_ADMIN \
+        --net host \
         --privileged \
         -v $HOME:$HOME \
+        -e NFS_DISABLE_VERSION_3='true' \
+        -e NFS_EXPORT_0="/usr/local/bin *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
+        -e NFS_EXPORT_1="$HOME/var/data/ *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
         -e HOME=$HOME \
         -w $PWD \
-        $NFS_CONTAINER_IMAGE 
+        $NFS_CONTAINER_IMAGE \
+        $NFS_CONTAINER_COMMAND
+    
 }
 function toolboxctl::stop_nfs_server(){
     docker stop toolbox_nfs_server &> /dev/null || true
