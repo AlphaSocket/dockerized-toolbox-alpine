@@ -12,7 +12,7 @@ mkdir -p "${BUILD_PATHS_BINARIES_FOLDER}"
 mkdir -p "${BUILD_PATHS_LIBRARIES_FOLDER}"
 pip install --upgrade pip
 curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
-mkdir /tmp/hgflow
+mkdir /tmp/hgflow ${BUILD_PATHS_LIBRARIES_FOLDER}/hg
 tar -xvjf /tmp/hgflow-installer.tar.bz2 -C /tmp/hgflow/
 mv /tmp/hgflow/hgflow.py ${BUILD_PATHS_LIBRARIES_FOLDER}/hg/flow.py
 rm -rf /tmp/hgflow
