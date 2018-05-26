@@ -247,12 +247,14 @@ test:
         #- bin/toolboxctl start
         #- "TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)"
         #
+        #-u $(id -u):$(getent group docker | cut -d: -f3)
         - 'TEST_CONTAINER_MAIN_ID=$(
              docker run
                -d --name=$TEST_CONTAINER_NAME
+                --cap-add NET_ADMIN
+                --cap-add SYS_MODULE
                 --cap-add SYS_ADMIN
                 --net host
-                -u $(id -u):$(getent group docker | cut -d: -f3)
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
                 -e NFS_EXPORT_0="${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
