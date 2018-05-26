@@ -6,21 +6,13 @@ echo "### Install all dependencies..."
 apk add --no-cache tini curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $SETUP_DEPENDENCIES_CONFIG $SETUP_DEPENDENCIES_RUNTIME
 
 
-# Setup export file
-echo "### Setup export file..."
-mkdir -p /var/lib/nfs/v4recovery
-mkdir -p /var/lib/nfs/rpc_pipefs
-chmod 766 /etc/exports
-chmod 766 /var/lib/nfs/rpc_pipefs
-chmod 766 /var/lib/nfs/v4recovery
-
 # Install extra binaries
 echo "### Install extra binaries..."
 pip install --upgrade pip
 curl -fsSL https://bitbucket.org/yujiewu/hgflow/downloads/hgflow-v0.9.8.3.tar.bz2 -o /tmp/hgflow-installer.tar.bz2
 mkdir /tmp/hgflow
 tar -xvjf /tmp/hgflow-installer.tar.bz2 -C /tmp/hgflow/
-mv /tmp/hgflow/hgflow.py ${BUILD_PATHS_BINARIES_FOLDER}/hgflow.py
+mv /tmp/hgflow/hgflow.py ${BUILD_PATHS_LIBRARIES_FOLDER}/hg/flow.py
 rm -rf /tmp/hgflow
 curl -fsSL https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -o /tmp/gitflow-installer.sh
 chmod +x /tmp/gitflow-installer.sh

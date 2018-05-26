@@ -31,7 +31,7 @@ echo "# Cleaned"
 echo "#\n# Running test\n#\n"
 # Testing container readiness
 echo "### Testing container readiness..."
-TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --cap-add SYS_ADMIN --cap-add SYS_MODULE --cap-add NET_ADMIN --net host -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock -e NFS_EXPORT_0="/usr/local/bin *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e NFS_EXPORT_1="$HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e HOME=$HOME -w $PWD 03192859189254/toolbox-alpine:latest )
+TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --cap-add SYS_ADMIN --cap-add NET_ADMIN --cap-add SYS_MODULE --cap-add SYS_ADMIN --cap-add DAC_READ_SEARCH --cap-add LINUX_IMMUTABLE --cap-add IPC_LOCK --cap-add IPC_OWNER --cap-add SYS_RAWIO --cap-add SYS_CHROOT --cap-add SYS_PTRACE --cap-add SYS_PACCT --cap-add SYS_BOOT --cap-add SYS_NICE --cap-add SYS_RESOURCE --cap-add SYS_TIME --cap-add SYS_TTY_CONFIG --cap-add MKNOD --cap-add LEASE --cap-add AUDIT_CONTROL --cap-add SETFCAP --cap-add MAC_OVERRIDE --cap-add MAC_ADMIN --cap-add SYSLOG --cap-add WAKE_ALARM --cap-add BLOCK_SUSPEND --cap-add AUDIT_READ+EIP --net host -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock -e NFS_DISABLE_VERSION_3=1 -e NFS_EXPORT_0="$HOME  *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e NFS_EXPORT_1="/usr/local/lib *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e HOME=$HOME -w $PWD 03192859189254/toolbox-alpine:latest )
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
 TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
 MAX_TRIES=300
@@ -41,9 +41,9 @@ while ! eval "$TEST_CONDITION"; do if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BRE
 
 # Tests
 echo "### Tests..."
-mkdir -p /tmp/test_mount_binaries
-sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_binaries
-PATH="/home/sam/bin/global_node_modules/.npm-packages/bin:/home/sam/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/sam/bin:/snap/bin:/home/sam/.vimpkg/bin:/tmp/test_mount_binaries"
+mkdir -p /tmp/test_mount_home
+sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_home
+PATH="/home/sam/bin/global_node_modules/.npm-packages/bin:/home/sam/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/sam/bin:/snap/bin:/home/sam/.vimpkg/bin:/tmp/test_mount_home/bin"
 kubectl version --client
 
 

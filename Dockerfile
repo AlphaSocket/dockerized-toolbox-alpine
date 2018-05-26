@@ -31,6 +31,7 @@ ENV \
 	BUILD_CMD="/usr/local/bin/nfsd" \
 	BUILD_PATHS_BASH_COMPLETITIONS="$HOME/.bash_completion.d" \
 	BUILD_PATHS_BINARIES_FOLDER="/usr/local/bin" \
+	BUILD_PATHS_LIBRARIES_FOLDER="/usr/local/lib" \
 	SETUP_PATHS_BINARIES="/usr/local/bin" \
 	SETUP_PATHS_SETUP="/usr/local/bin/setup" \
 	SETUP_PATHS_CONFIG="/usr/local/bin/config" \
@@ -65,14 +66,14 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-entrypoint /usr/local/bin/docker-entrypoint
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1527340308
-ADD imports/bin/config /usr/local/bin/config/1527340308
+ADD imports/bin/setup /usr/local/bin/setup/1527359076
+ADD imports/bin/config /usr/local/bin/config/1527359076
 ADD imports/pause /usr/local/bin/pause
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1527340308 && \
+    /usr/local/bin/setup/1527359076 && \
     ${BUILDER_TARGETS_CONTAINER_HARDEN}
 
 EXPOSE 2049 
