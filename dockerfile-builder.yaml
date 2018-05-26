@@ -50,6 +50,9 @@ setup:
       #  - curl -fsSL https://php.codecasts.rocks/php-alpine.rsa.pub -o /etc/apk/keys/php-alpine.rsa.pub
       #  - echo '@php7_2 https://php.codecasts.rocks/v3.7/php-7.2' >> /etc/apk/repositories
       #  - apk add --no-cache $SETUP_DEPENDENCIES_PHP7_2
+    - title: "Setup export file"
+      commands:
+        - chmod 766 /etc/exports
         
     - title: "Install extra binaries"
       commands:
@@ -165,8 +168,6 @@ setup:
         #
         - curl -fsSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
         - sed -i 's/#!\/usr\/bin\/env bash/#!\/bin\/bash/g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
-        - mkdir -p /var/lib/nfs/rpc_pipefs 
-        - mkdir -p /var/lib/nfs/v4recovery 
         - echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab 
         - echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
         
@@ -210,7 +211,12 @@ config:
     #    - gcloud config set core/disable_usage_reporting true
     #    - gcloud config set component_manager/disable_update_check true
     #    - gcloud config set metrics/environment github_docker_image
-    #    
+    #
+    
+    - title: "Create folders"
+      commands:
+        - mkdir -p /var/lib/nfs/rpc_pipefs 
+        - mkdir -p /var/lib/nfs/v4recovery 
 #
 # Test
 #
@@ -239,8 +245,9 @@ test:
         - 'TEST_CONTAINER_MAIN_ID=$(
              docker run
                -d --name=$TEST_CONTAINER_NAME
-                --privileged
+                --cap-add SYS_ADMIN
                 --net host
+                -u $(id -u):$(getent group docker | cut -d: -f3)
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
                 -e NFS_EXPORT_0="${BUILD_PATHS_BINARIES_FOLDER} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
