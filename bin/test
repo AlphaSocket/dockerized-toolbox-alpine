@@ -31,7 +31,7 @@ echo "# Cleaned"
 echo "#\n# Running test\n#\n"
 # Testing container readiness
 echo "### Testing container readiness..."
-TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --privileged --net host -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock -e NFS_EXPORT_0="/usr/local/bin *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e NFS_EXPORT_1="$HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e HOME=$HOME -w $PWD 03192859189254/toolbox-alpine:latest )
+TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --cap-add SYS_ADMIN --net host -u $(id -u):$(getent group docker | cut -d: -f3) -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock -e NFS_EXPORT_0="/usr/local/bin *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e NFS_EXPORT_1="$HOME *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e HOME=$HOME -w $PWD 03192859189254/toolbox-alpine:latest )
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
 TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
 MAX_TRIES=300
