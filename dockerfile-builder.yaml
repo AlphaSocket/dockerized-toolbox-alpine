@@ -250,9 +250,12 @@ test:
         #- "TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)"
         #
         #-u $(id -u):$(getent group docker | cut -d: -f3)
+        #
+        # TODO: remove privileged and test capabilities when platform support them
         - 'TEST_CONTAINER_MAIN_ID=$(
              docker run
                -d --name=$TEST_CONTAINER_NAME
+                --privileged
                 --cap-add SYS_ADMIN
                 --cap-add NET_ADMIN
                 --cap-add SYS_MODULE
