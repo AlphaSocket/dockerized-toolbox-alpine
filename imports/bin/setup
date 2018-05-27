@@ -86,6 +86,11 @@ echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/f
 echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
 chmod -R +x ${BUILD_PATHS_BINARIES_FOLDER}
 
+# Setup NFS folders
+echo "### Setup NFS folders..."
+mkdir -p /var/lib/nfs/v4recovery
+mkdir -p /var/lib/nfs/rpc_pipefs
+
 
 # Remove unecessary dependencies
 echo "### Remove unecessary dependencies..."

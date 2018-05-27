@@ -3,11 +3,6 @@
 # exit if a command fails
 set -e
 
-# Setup NFS folders
-echo "### Setup NFS folders..."
-mkdir -p /var/lib/nfs/v4recovery
-mkdir -p /var/lib/nfs/rpc_pipefs
-
 # Add Bash completitions
 echo "### Add Bash completitions..."
 if [ $(id -u) -ne 0 ]; then

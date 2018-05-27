@@ -190,6 +190,11 @@ setup:
         # Final config
         - chmod -R +x ${BUILD_PATHS_BINARIES_FOLDER}
         
+    - title: "Setup NFS folders"
+      commands:
+        - mkdir -p /var/lib/nfs/v4recovery
+        - mkdir -p /var/lib/nfs/rpc_pipefs
+        
 config:
   envvars:
     nfs:
@@ -200,12 +205,6 @@ config:
       sync: 'async'
     
   processes:
-    
-    - title: "Setup NFS folders"
-      commands:
-        - mkdir -p /var/lib/nfs/v4recovery
-        - mkdir -p /var/lib/nfs/rpc_pipefs
-    
     #
     # Bash completitions
     #
