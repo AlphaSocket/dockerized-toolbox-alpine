@@ -260,41 +260,40 @@ test:
         #-u $(id -u):$(getent group docker | cut -d: -f3)
         #
         # TODO: remove privileged and test capabilities when platform support them
+        # --cap-add SYS_ADMIN
+        # --cap-add NET_ADMIN
+        # --cap-add SYS_MODULE
+        # --cap-add DAC_READ_SEARCH
+        # --cap-add LINUX_IMMUTABLE
+        # --cap-add IPC_LOCK
+        # --cap-add IPC_OWNER
+        # --cap-add SYS_RAWIO
+        # --cap-add SYS_CHROOT
+        # --cap-add SYS_PTRACE
+        # --cap-add SYS_PACCT
+        # --cap-add SYS_BOOT
+        # --cap-add SYS_NICE
+        # --cap-add SYS_RESOURCE
+        # --cap-add SYS_TIME
+        # --cap-add SYS_TTY_CONFIG
+        # --cap-add MKNOD
+        # --cap-add LEASE
+        # --cap-add AUDIT_CONTROL
+        # --cap-add SETFCAP
+        # --cap-add MAC_OVERRIDE
+        # --cap-add MAC_ADMIN
+        # --cap-add SYSLOG
+        # --cap-add WAKE_ALARM
+        # --cap-add BLOCK_SUSPEND
         - 'TEST_CONTAINER_MAIN_ID=$(
              docker run
                -d --name=$TEST_CONTAINER_NAME
                 --privileged
-                --cap-add SYS_ADMIN
-                --cap-add NET_ADMIN
-                --cap-add SYS_MODULE
-                --cap-add DAC_READ_SEARCH
-                --cap-add LINUX_IMMUTABLE
-                --cap-add IPC_LOCK
-                --cap-add IPC_OWNER
-                --cap-add SYS_RAWIO
-                --cap-add SYS_CHROOT
-                --cap-add SYS_PTRACE
-                --cap-add SYS_PACCT
-                --cap-add SYS_BOOT
-                --cap-add SYS_NICE
-                --cap-add SYS_RESOURCE
-                --cap-add SYS_TIME
-                --cap-add SYS_TTY_CONFIG
-                --cap-add MKNOD
-                --cap-add LEASE
-                --cap-add AUDIT_CONTROL
-                --cap-add SETFCAP
-                --cap-add MAC_OVERRIDE
-                --cap-add MAC_ADMIN
-                --cap-add SYSLOG
-                --cap-add WAKE_ALARM
-                --cap-add BLOCK_SUSPEND
                 --net host
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
                 -e NFS_DISABLE_VERSION_3=1
                 -e NFS_EXPORT_0="${TEST_CONTAINER_ENVVARS_HOME}  *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
-                -e NFS_EXPORT_1="${BUILD_PATHS_LIBRARIES_FOLDER} *(fsid=1,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
                 -e HOME=$TEST_CONTAINER_ENVVARS_HOME
                 -w $TEST_CONTAINER_WORKDIR
                 ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
