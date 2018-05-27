@@ -219,6 +219,7 @@ config:
     # Conf
     #
     - title: "Configurations"
+      shell_condition: $(id -u) -ne 0
       commands:
         - gcloud config set core/disable_usage_reporting true
         - gcloud config set component_manager/disable_update_check true
