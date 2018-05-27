@@ -94,6 +94,7 @@ function toolboxctl::link_binaries(){
 function toolboxctl::start_nfs_server(){
     toolboxctl::stop_nfs_server
     
+    log "Starting nfs container"
     #docker run -d --name toolbox_nfs_server --privileged -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
     #docker run -d --name toolbox_nfs_server --cap-add=NET_ADMIN -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
 	docker run $NFS_CONTAINER_MODE \
@@ -111,6 +112,13 @@ function toolboxctl::start_nfs_server(){
         $NFS_CONTAINER_IMAGE \
         $NFS_CONTAINER_COMMAND
     
+    log "Mounting nfs libraries"
+    mkdir -p $HOME/lib/hg
+    mkdir -p $HOME/lib/kubernetes
+    
+    sudo mount -v -t nfs4 127.0.0.1:/hg $HOME/lib/hg
+    sudo mount -v -t nfs4 127.0.0.1:/kubernetes $HOME/lib/kubernetes
+
 }
 function toolboxctl::stop_nfs_server(){
     docker stop toolbox_nfs_server &> /dev/null || true

@@ -31,7 +31,7 @@ echo "# Cleaned"
 echo "#\n# Running test\n#\n"
 # Testing container readiness
 echo "### Testing container readiness..."
-TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --privileged --net host -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock -e NFS_DISABLE_VERSION_3=1 -e NFS_EXPORT_0="$HOME  *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e HOME=$HOME -w $PWD 03192859189254/toolbox-alpine:latest )
+TEST_CONTAINER_MAIN_ID=$( docker run -d --name=toolbox-alpine --privileged --net host -v $HOME:$HOME -v /var/run/docker.sock:/var/run/docker.sock -e NFS_DISABLE_VERSION_3=1 -e NFS_EXPORT_0="$HOME *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" -e HOME=$HOME -w $PWD 03192859189254/toolbox-alpine:latest )
 TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
 TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
 MAX_TRIES=300
@@ -43,7 +43,7 @@ while ! eval "$TEST_CONDITION"; do if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BRE
 echo "### Tests..."
 touch ./testing_mount
 mkdir -p /tmp/test_mount_home
-sudo mount -v -t nfs -o 'vers=4,addr=127.0.0.1,clientaddr=127.0.0.1' 127.0.0.1:/ /tmp/test_mount_home
+sudo mount -v -t nfs 127.0.0.1:/ /tmp/test_mount_home
 ls -al /tmp/test_mount_home/testing_mount
 
 
