@@ -324,7 +324,7 @@ test:
     # 
     - title: "Tests"
       commands:
-        - touch ./testing_mount
+        - touch ../testing_mount
         - mkdir -p /tmp/test_mount_home
         - "sudo mount -v -t nfs 127.0.0.1:/ /tmp/test_mount_home"
         - ls -al /tmp/test_mount_home/testing_mount
