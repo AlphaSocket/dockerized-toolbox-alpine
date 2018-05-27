@@ -152,7 +152,10 @@ setup:
         - curl -fsSL https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/skaffold
         # Cluster management
         - MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
-        - curl -fsSL https://storage.googleapis.com/minikube/releases/${MINIKUBE_LATEST}/minikube-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/minikube
+        - mkdir -p ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes
+        - curl -fsSL https://storage.googleapis.com/minikube/releases/${MINIKUBE_LATEST}/minikube-linux-amd64 -o ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube
+        - chmod +x ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube
+        - ln -s ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube ${BUILD_PATHS_BINARIES_FOLDER}/minikube
         
         - git -C /usr/local/lib/ clone https://github.com/Alphasocket/kubeadm-dind-cluster
         - ln -s /usr/local/lib/kubeadm-dind-cluster/dind-cluster.sh ${BUILD_PATHS_BINARIES_FOLDER}/dind-cluster.sh
