@@ -1,1 +1,0 @@
-{{getenv "CONFIG_NFS_SHARED_DIRECTORY"}} {{if getenv "CONFIG_NFS_IP_PERMITTED"}}{{getenv "CONFIG_NFS_IP_PERMITTED"}}{{else}}*{{end}}({{if getenv "CONFIG_NFS_READ_ONLY"}}ro{{else}}rw{{end}},fsid=0,{{if getenv "CONFIG_NFS_SYNC"}}sync{{else}}async{{end}},no_subtree_check,no_auth_nlm,insecure,no_root_squash)

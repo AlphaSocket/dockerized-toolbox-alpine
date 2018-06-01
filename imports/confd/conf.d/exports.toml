@@ -1,8 +1,0 @@
-[template]
-src = "exports.tmpl"
-dest = "/etc/exports"
-mode = "0644"
-keys = [
-    "CONFIG_NFS_SHARED_DIRECTORY",
-    "CONFIG_NFS_READ_ONLY"
-]

@@ -10,19 +10,22 @@ set -e
 
 USER_ID=$(id -u)
 GROUP_ID=$(getent group docker | cut -d: -f3)
-HOST_PORT_NFS=2049
+HOST_PORT_NFS="${HOST_PORT_NFS:-2049}"
 
-PROJECTS_PATH="${HOME}/Projects"
-BINARIES_PATH="${HOME}/bin"
+PROJECTS_PATH="${PROJECTS_PATH-$HOME/Projects}"
+BINARIES_PATH="${BINARIES_PATH-$HOME/bin}"
+LIBRARIES_PATH="${LIBRARIES_PATH-$HOME/lib}"
+
 TOOLBOX_PATH="$( dirname $(dirname $(readlink -f $0) ) )"
 TOOLBOX_BINARIES_PATH="${TOOLBOX_PATH}/bin"
 #TOOLBOXCTL_SOURCE_PATH="${TOOLBOX_BINARIES_PATH}/toolboxctl"
 TOOLBOXCTL_SOURCE_PATH="$(readlink -f $0)"
 TOOLBOXCTL_TARGET_PATH="${BINARIES_PATH}/toolboxctl"
 
-DOCKER_BIN_PATH=$(which docker 2> /dev/null)
+DOCKER_BIN_PATH="${DOCKER_BIN_PATH-$(which docker 2> /dev/null)}"
 DOCKER_SOCKET_PATH="${DOCKER_SOCKET_PATH:-/var/run/docker.sock}"
 DOCKER_CONTAINER_PATH="${DOCKER_CONTAINER_PATH:-/var/run/docker.sock}"
+
 DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:$DOCKER_CONTAINER_PATH "
 
 MAIN_CONTAINER_RUN_AS_PRIVILIGED=${MAIN_CONTAINER_RUN_AS_PRIVILIGED:0}
@@ -32,14 +35,20 @@ MAIN_CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 if [ -z $MAIN_CONTAINER_IMAGE ]; then
     MAIN_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
 fi
-MAIN_CONTAINER_COMMAND="/usr/local/bin/pause"
+MAIN_CONTAINER_COMMAND="pause"
+MAIN_CONTAINER_BINARIES_PATH="${MAIN_CONTAINER_BINARIES_PATH-/usr/local/bin}"
+MAIN_CONTAINER_LIBRARIES_PATH="${MAIN_CONTAINER_LIBRARIES_PATH-/usr/local/lib}"
 
 NFS_CONTAINER_RUN_AS_PRIVILIGED=${NFS_CONTAINER_RUN_AS_PRIVILIGED:0}
 NFS_CONTAINER_NAME="toolbox_nfs_server"
 NFS_CONTAINER_MODE="-d"
-NFS_CONTAINER_PORT=2049
-NFS_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
-NFS_CONTAINER_COMMAND="/usr/local/bin/nfsd"
+NFS_CONTAINER_IP="${NFS_CONTAINER_IP-127.0.0.1}"
+NFS_CONTAINER_PORT="${NFS_CONTAINER_PORT-2049}"
+if [ -z $NFS_CONTAINER_IMAGE ]; then
+    NFS_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
+fi
+NFS_CONTAINER_COMMAND="nfsd"
+NFS_CONTAINER_LIB="hg kubernetes"
 
 # Globals
 log() {
@@ -65,14 +74,18 @@ function toolboxctl::destroy(){
     exit 0
 }
 
-
 function toolboxctl::pull_image(){
 	docker pull $MAIN_CONTAINER_IMAGE
 }
 
 function toolboxctl::link_binaries(){
+
     if [ $RUNNING = 0 ]; then
         toolboxctl::init_container
+    fi
+    
+    if [ ! -e "${TOOLBOX_BINARIES_PATH}/runner" ]; then
+        err "Runner not foun in ${TOOLBOX_BINARIES_PATH}/runner . Can't link binaries "
     fi
     
     mkdir -p "${TOOLBOX_BINARIES_PATH}" 
@@ -82,17 +95,66 @@ function toolboxctl::link_binaries(){
     
     #TOOLBOX_BINARIES="$(toolboxctl exec ls --color=never -l /usr/local/bin | grep ^- | awk '{print $9}' | grep -v docker | grep -v modprobe)"
     #TOOLBOX_BINARIES="$(toolboxctl exec find /usr/local/bin -mindepth 1 -maxdepth 1 -type f -exec basename {} \; | grep -v docker | grep -v modprobe )"
-    TOOLBOX_BINARIES="$(toolboxctl exec find /usr/local/bin -mindepth 1 -maxdepth 1 -type f | grep -v docker | grep -v modprobe )"
+    TOOLBOX_BINARIES="$(toolboxctl exec find ${MAIN_CONTAINER_BINARIES_PATH} -mindepth 1 -maxdepth 1 -type f -exec echo {} \;)"
     for TOOLBOX_BINARY in $TOOLBOX_BINARIES;
     do
-        TOOLBOX_BINARY="$(basename ${TOOLBOX_BINARY})"
-        unlink "${BINARIES_PATH}/${TOOLBOX_BINARY}" || true; 
-        ln -s "${TOOLBOX_BINARIES_PATH}/runner" "${BINARIES_PATH}/${TOOLBOX_BINARY}";
+        TOOLBOX_BINARY="$(basename ${TOOLBOX_BINARY} )"
+        
+        case "$TOOLBOX_BINARY" in
+            nfsd|docker*|modprobe)
+                [ -z $VERBOSE ] || log "skipped $TOOLBOX_BINARY"
+                continue 2
+            ;;
+            *)
+                TOOLBOX_BINARY_SRC="${TOOLBOX_BINARIES_PATH}/runner"
+            ;;
+        esac
+        
+        if [ -e "${TOOLBOX_BINARY_SRC}" ]; then
+            [ -z $VERBOSE ] || log "Unlinking $TOOLBOX_BINARY" 
+            unlink "${BINARIES_PATH}/${TOOLBOX_BINARY}" &> /dev/null || true;
+            [ -z $VERBOSE ] || log "Linking ${BINARIES_PATH}/${TOOLBOX_BINARY} to ${TOOLBOX_BINARY_SRC} "
+            ln -s "${TOOLBOX_BINARY_SRC}" "${BINARIES_PATH}/${TOOLBOX_BINARY}";
+        fi
     done;
+}
+
+function toolboxctl::link_libraries(){
+    #TOOLBOX_LIBRARIES="$(toolboxctl exec find ${MAIN_CONTAINER_BINARIES_PATH} -mindepth 1 -maxdepth 1 -type l -exec echo {} \;)"
+    TOOLBOX_LINKED_BINARIES='/usr/local/bin/minikube /usr/local/bin/hgflow.py'
+    
+    for TOOLBOX_LINKED_BINARY in $TOOLBOX_LINKED_BINARIES;
+    do
+        TOOLBOX_LINKED_BINARY="$(basename ${TOOLBOX_LINKED_BINARY} )"
+        
+        case "$TOOLBOX_LINKED_BINARY" in
+            nfsd*|docker*|modprobe*)
+                [ -z $VERBOSE ] || log "skipped $TOOLBOX_LINKED_BINARY"
+                continue 2
+            ;;
+            *)
+                TOOLBOX_TARGET_LINK="$(toolboxctl exec readlink -nf ${MAIN_CONTAINER_BINARIES_PATH}/${TOOLBOX_LINKED_BINARY} || echo "" )"
+                # Convert link from container_link to host_link
+                TOOLBOX_BINARY_SRC="$( echo $TOOLBOX_TARGET_LINK | sed -e "s?${MAIN_CONTAINER_LIBRARIES_PATH}?${LIBRARIES_PATH}?g" )"
+            ;;
+        esac
+        
+        if [ ! -z $TOOLBOX_BINARY_SRC ] && [ -e "${TOOLBOX_BINARY_SRC}" ]; then
+            [ -z $VERBOSE ] || log "Unlinking $TOOLBOX_LINKED_BINARY" 
+            unlink "${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY}" &> /dev/null || true;
+            [ -z $VERBOSE ] || log "Linking ${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY} to ${TOOLBOX_BINARY_SRC} "
+            ln -s "${TOOLBOX_BINARY_SRC}" "${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY}";
+        fi
+    done;
+    
 }
 
 function toolboxctl::start_nfs_server(){
     toolboxctl::stop_nfs_server
+    
+    #NFS_EXPORT_0="$HOME/var/data/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+    #NFS_EXPORT_1="/usr/local/lib *(fsid=1,ro,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+    NFS_EXPORT_0="/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
     
     log "Starting nfs container"
     #docker run -d --name toolbox_nfs_server --privileged -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
@@ -103,28 +165,51 @@ function toolboxctl::start_nfs_server(){
         --privileged \
         -v $HOME:$HOME \
         -e NFS_DISABLE_VERSION_3='true' \
-        -e NFS_EXPORT_0="$HOME *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
-        -e NFS_EXPORT_1="$HOME/var/data/ *(rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
-        -e NFS_EXPORT_2="/usr/local/lib *(fsid=1,ro,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
-        -e NFS_EXPORT_3="/usr/local/lib/hg *(ro,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)" \
+        -e NFS_EXPORT_0="$NFS_EXPORT_0" \
         -e HOME=$HOME \
         -w $PWD \
         $NFS_CONTAINER_IMAGE \
         $NFS_CONTAINER_COMMAND
     
+    while ! docker exec toolbox_nfs_server docker-rediness-test; do
+        if [ "$( docker inspect -f {{.State.Running}} $(docker ps -aqf "name=$NFS_CONTAINER_NAME") )" != 'true' ]; then
+            err "NFS: Container failed, printing log and exiting"
+            docker logs $NFS_CONTAINER_NAME
+            exit 1;
+        fi
+        sleep 1;
+    done
     log "Mounting nfs libraries"
-    mkdir -p $HOME/lib/hg
-    mkdir -p $HOME/lib/kubernetes
-    
-    if [ "$( docker inspect -f {{.State.Running}} $(docker ps -f "name=$NFS_CONTAINER_NAME") )" = 'true' ]; then
-        sudo mount -v -t nfs4 127.0.0.1:/hg $HOME/lib/hg
-        sudo mount -v -t nfs4 127.0.0.1:/kubernetes $HOME/lib/kubernetes
+    if docker exec toolbox_nfs_server docker-rediness-test; then
+        
+        for LIB in $NFS_CONTAINER_LIB;
+        do
+            umount ${LIBRARIES_PATH}/$LIB &> /dev/null || true
+            mkdir -p ${LIBRARIES_PATH}/$LIB &> /dev/null || true
+            if ! mount ${LIBRARIES_PATH}/$LIB ; then
+                mount_command="sudo mount -v -t nfs4 127.0.0.1:/usr/local/lib/$LIB ${LIBRARIES_PATH}/$LIB"
+                log "Forced mount ${LIBRARIES_PATH}/$LIB : $mount_command"
+                if exec $mount_command; then
+                    log "Libraries $LIB mounted on ${LIBRARIES_PATH}/$LIB ";
+                else
+                    log "Libraries $LIB not mounted ";
+                fi
+            fi
+        done;
     fi
 
 }
 function toolboxctl::stop_nfs_server(){
+    for LIB in $NFS_CONTAINER_LIB;
+    do
+        if [ -e "${LIBRARIES_PATH}/$LIB" ]; then
+            umount "${LIBRARIES_PATH}/$LIB" || true
+        fi
+    done;
+    
     docker stop toolbox_nfs_server &> /dev/null || true
     docker rm toolbox_nfs_server &> /dev/null || true
+    
 }
 
 function toolboxctl::restart_nfs_server(){
@@ -135,10 +220,11 @@ function toolboxctl::restart_nfs_server(){
 function toolboxctl::init_container(){
     toolboxctl::remove_container
     
+    # -p $MAIN_CONTAINER_PORT:$HOST_PORT_NFS
 	[[ $MAIN_CONTAINER_RUN_AS_PRIVILIGED = 1 ]] && MAIN_CONTAINER_USER="--privileged"
 	docker run $MAIN_CONTAINER_MODE --name "$MAIN_CONTAINER_NAME" \
         --cap-add SYS_ADMIN $MAIN_CONTAINER_USER \
-        --net host -p $MAIN_CONTAINER_PORT:$HOST_PORT_NFS \
+        --net host \
         -v $HOME:$HOME $DOCKER_VOLUMES \
         -e HOME=$HOME -e DOCKER_HOST=$DOCKER_CONTAINER_PATH \
         -w $PWD \
@@ -203,6 +289,22 @@ function toolboxctl::get_container_status(){
     fi
 }
 
+
+function toolboxctl::get_nfs_container_id(){
+    NFS_CONTAINER_ID=$(docker ps -aqf "name=$NFS_CONTAINER_NAME")
+    echo $NFS_CONTAINER_ID
+}
+
+function toolboxctl::get_nfs_server_status(){
+    CONTAINER_ID=$(toolboxctl::get_nfs_container_id)
+    
+    if [ $CONTAINER_ID ] && [ "$( docker inspect -f {{.State.Running}} $CONTAINER_ID )" = 'true' ]; then
+        echo "Running"
+    else
+        echo "NotRunning"
+    fi
+}
+
 function toolboxctl::main(){
     toolboxctl::initialize
     
@@ -254,11 +356,23 @@ function toolboxctl::main(){
         link:binaries)
             toolboxctl::link_binaries
             ;;
+        link:libraries)
+            toolboxctl::link_libraries
+            ;;
         nfs:start)
             toolboxctl::start_nfs_server
             ;;
         nfs:stop)
             toolboxctl::stop_nfs_server
+            ;;
+        nfs:get:status)
+            toolboxctl::get_nfs_server_status
+            ;;
+        nfs:get:ip)
+            echo $NFS_CONTAINER_IP
+            ;;
+        nfs:get:port)
+            echo $NFS_CONTAINER_PORT
             ;;
         nfs:restart)
             toolboxctl::restart_nfs_server

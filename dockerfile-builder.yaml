@@ -2,7 +2,9 @@ project:
   title: &project_title alphasocket/dockerized-toolbox-alpine
   codename: &project_codename toolbox-alpine
   description: "This docker image will contain all required cli tools for security/development/testing operations
-  Included an nfs server to mount persistent volumes from the home directory see http://wiki.linux-nfs.org/wiki/index.php/Nfsv4_configuration
+  Included an nfs server to mount persistent volumes from the home directory see [NFS documentation](http://wiki.linux-nfs.org/wiki/index.php/Nfsv4_configuration)
+  
+  Based on [ehough/docker-nfs-server](https://github.com/ehough/docker-nfs-server/tree/master)
   "
 
 #
@@ -76,6 +78,7 @@ setup:
         - mkdir /tmp/hgflow ${BUILD_PATHS_LIBRARIES_FOLDER}/hg
         - tar -xvjf /tmp/hgflow-installer.tar.bz2 -C /tmp/hgflow/
         - mv /tmp/hgflow/hgflow.py ${BUILD_PATHS_LIBRARIES_FOLDER}/hg/flow.py
+        - ln -s /usr/local/lib/hg/flow.py /usr/local/bin/hgflow.py
         - rm -rf /tmp/hgflow
         
         - curl -fsSL https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -o /tmp/gitflow-installer.sh
@@ -122,7 +125,7 @@ setup:
         #
         - pip install awscli
         #- pip install gcloud
-        - GCLOUD_VERSION="199.0.0"
+        - GCLOUD_VERSION="203.0.0"
         - curl -fsSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz -o /tmp/google-cloud-sdk-linux-x86_64.tar.gz
         - tar xf /tmp/google-cloud-sdk-linux-x86_64.tar.gz -C /usr/local/lib/
         - ln -s /usr/local/lib/google-cloud-sdk/bin/* /usr/local/bin/
@@ -150,16 +153,19 @@ setup:
         - curl -fsSL https://github.com/kubernetes/kompose/releases/download/${KOMPOSE_LATEST}/kompose-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kompose
         
         - curl -fsSL https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/skaffold
-        # Cluster management
+        
+        # Local cluster management
+        ## Minikube
         - MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
         - mkdir -p ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes
         - curl -fsSL https://storage.googleapis.com/minikube/releases/${MINIKUBE_LATEST}/minikube-linux-amd64 -o ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube
         - chmod +x ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube
         - ln -s ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube ${BUILD_PATHS_BINARIES_FOLDER}/minikube
-        
-        - git -C /usr/local/lib/ clone https://github.com/Alphasocket/kubeadm-dind-cluster
-        - ln -s /usr/local/lib/kubeadm-dind-cluster/dind-cluster.sh ${BUILD_PATHS_BINARIES_FOLDER}/dind-cluster.sh
-        - ln -s /usr/local/lib/kubeadm-dind-cluster/clusterctl ${BUILD_PATHS_BINARIES_FOLDER}/clusterctl
+        ## kubeadm DIND
+        - git -C ${BUILD_PATHS_LIBRARIES_FOLDER}/ clone https://github.com/kubernetes-sigs/kubeadm-dind-cluster
+        - ln -s ${BUILD_PATHS_LIBRARIES_FOLDER}/kubeadm-dind-cluster/dind-cluster.sh ${BUILD_PATHS_BINARIES_FOLDER}/dind-cluster.sh
+        ## localclusterctl
+        - curl -fsSL https://gist.githubusercontent.com/AlphaSocket/0f497330870e002e732c3abe824b2317/raw/a82cb65e0edce04ff3b6c8a6f31e8015cdd8f859/localclusterctl -o ${BUILD_PATHS_BINARIES_FOLDER}/localclusterctl
         
         # OnePassword
         - mkdir /tmp/op
