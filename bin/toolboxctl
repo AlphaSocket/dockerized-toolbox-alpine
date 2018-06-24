@@ -99,6 +99,7 @@ function toolboxctl::link_binaries(){
     for TOOLBOX_BINARY in $TOOLBOX_BINARIES;
     do
         TOOLBOX_BINARY="$(basename ${TOOLBOX_BINARY} )"
+        TOOLBOX_BINARY=${TOOLBOX_BINARY//[^[:print:]]/}
         
         case "$TOOLBOX_BINARY" in
             nfsd|docker*|modprobe)
@@ -139,7 +140,7 @@ function toolboxctl::link_libraries(){
             ;;
         esac
         
-        if [ ! -z $TOOLBOX_BINARY_SRC ] && [ -e "${TOOLBOX_BINARY_SRC}" ]; then
+        if [ ! -z "$TOOLBOX_BINARY_SRC" ] && [ -e "${TOOLBOX_BINARY_SRC}" ]; then
             [ -z $VERBOSE ] || log "Unlinking $TOOLBOX_LINKED_BINARY" 
             unlink "${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY}" &> /dev/null || true;
             [ -z $VERBOSE ] || log "Linking ${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY} to ${TOOLBOX_BINARY_SRC} "

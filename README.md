@@ -74,6 +74,7 @@ Based on [ehough/docker-nfs-server](https://github.com/ehough/docker-nfs-server/
   + php7-simplexml
   + php7-zip
   + php7-zlib
+  + php7-tokenizer
   + nodejs
   + nodejs-npm
   + python
