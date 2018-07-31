@@ -1,0 +1,33 @@
+version: "3.5"
+services:
+    toolbox_main:
+        container_name: toolbox_main
+        image: alphasocket/toolbox-alpine:latest
+        user: "${UID}:${GID}"
+        entrypoint: ["tini","--","docker-entrypoint"]
+        command: ["pause"]
+        environment:
+            - HOME=$HOME
+        restart: always
+        network_mode: host
+        working_dir: $HOME
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - $HOME:$HOME
+    toolbox_nfs_server:
+        container_name: toolbox_nfs_server
+        image: alphasocket/toolbox-alpine:latest
+        privileged: true
+        entrypoint: ["tini","--","docker-entrypoint"]
+        command: ["nfsd"]
+        restart: always
+        working_dir: $HOME
+        network_mode: host
+        environment: 
+            - NFS_DISABLE_VERSION_3=true
+            - NFS_EXPORT_0=/usr/local/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)
+            - CONFIG_NFS_SHARED_DIRECTORY=/var/nfsshare
+            #- CONFIG_NFS_IP_PERMITTED=127.0.0.1,10.*.*.*,172.16-31.*.*,192.168.*.*
+            - CONFIG_NFS_IP_PERMITTED=10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*,127.0.0.1
+            - CONFIG_NFS_SYNC=async
+  

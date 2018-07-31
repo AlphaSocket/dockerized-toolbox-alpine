@@ -11,10 +11,13 @@ set -e
 USER_ID=$(id -u)
 GROUP_ID=$(getent group docker | cut -d: -f3)
 HOST_PORT_NFS="${HOST_PORT_NFS:-2049}"
+DOCKER_COMPOSE="$(which docker-compose)"
 
 PROJECTS_PATH="${PROJECTS_PATH-$HOME/Projects}"
 BINARIES_PATH="${BINARIES_PATH-$HOME/bin}"
 LIBRARIES_PATH="${LIBRARIES_PATH-$HOME/lib}"
+
+CONTAINER_MANAGER="${CONTAINER_MANAGER-docker-compose}"
 
 TOOLBOX_PATH="$( dirname $(dirname $(readlink -f $0) ) )"
 TOOLBOX_BINARIES_PATH="${TOOLBOX_PATH}/bin"
@@ -68,6 +71,11 @@ function toolboxctl::initialize(){
         err "Docker client not found"
         exit 1
     fi
+    
+    if [ "$CONTAINER_MANAGER" = "docker-compose" ] && [ -z "$DOCKER_COMPOSE" ]; then
+        err "Docker compose binary not found"
+        exit 1
+    fi
 }
 
 function toolboxctl::destroy(){
@@ -80,12 +88,12 @@ function toolboxctl::pull_image(){
 
 function toolboxctl::link_binaries(){
 
-    if [ $RUNNING = 0 ]; then
-        toolboxctl::init_container
+    if [ ! function toolboxctl::is_toolbox_running ]; then
+        err "Toolbox needs to be running to link binaries"
     fi
     
     if [ ! -e "${TOOLBOX_BINARIES_PATH}/runner" ]; then
-        err "Runner not foun in ${TOOLBOX_BINARIES_PATH}/runner . Can't link binaries "
+        err "Runner not found in ${TOOLBOX_BINARIES_PATH}/runner . Can't link binaries "
     fi
     
     mkdir -p "${TOOLBOX_BINARIES_PATH}" 
@@ -121,6 +129,13 @@ function toolboxctl::link_binaries(){
 }
 
 function toolboxctl::link_libraries(){
+    
+    if [ ! function toolboxctl::is_nfs_server_running ]; then
+        err "NFS server needs to be running to mount libraries"
+    fi
+    
+    #>>>>> Splitting in methods to override with docker composer
+    
     #TOOLBOX_LIBRARIES="$(toolboxctl exec find ${MAIN_CONTAINER_BINARIES_PATH} -mindepth 1 -maxdepth 1 -type l -exec echo {} \;)"
     TOOLBOX_LINKED_BINARIES='/usr/local/bin/minikube /usr/local/bin/hgflow.py'
     
@@ -150,9 +165,8 @@ function toolboxctl::link_libraries(){
     
 }
 
+
 function toolboxctl::start_nfs_server(){
-    toolboxctl::stop_nfs_server
-    
     #NFS_EXPORT_0="$HOME/var/data/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
     #NFS_EXPORT_1="/usr/local/lib *(fsid=1,ro,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
     NFS_EXPORT_0="/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
@@ -171,7 +185,9 @@ function toolboxctl::start_nfs_server(){
         -w $PWD \
         $NFS_CONTAINER_IMAGE \
         $NFS_CONTAINER_COMMAND
-    
+}
+
+function toolboxctl::mount_nfs_volumes(){
     while ! docker exec toolbox_nfs_server docker-rediness-test; do
         if [ "$( docker inspect -f {{.State.Running}} $(docker ps -aqf "name=$NFS_CONTAINER_NAME") )" != 'true' ]; then
             err "NFS: Container failed, printing log and exiting"
@@ -198,8 +214,9 @@ function toolboxctl::start_nfs_server(){
             fi
         done;
     fi
-
 }
+
+
 function toolboxctl::stop_nfs_server(){
     for LIB in $NFS_CONTAINER_LIB;
     do
@@ -290,6 +307,13 @@ function toolboxctl::get_container_status(){
     fi
 }
 
+function toolboxctl::is_toolbox_running(){
+    if [ $CONTAINER_ID ] && [ "$( docker inspect -f {{.State.Running}} $CONTAINER_ID )" = 'true' ]; then
+        return 1;
+    else
+        return 0;
+    fi
+}
 
 function toolboxctl::get_nfs_container_id(){
     NFS_CONTAINER_ID=$(docker ps -aqf "name=$NFS_CONTAINER_NAME")
@@ -299,12 +323,21 @@ function toolboxctl::get_nfs_container_id(){
 function toolboxctl::get_nfs_server_status(){
     CONTAINER_ID=$(toolboxctl::get_nfs_container_id)
     
-    if [ $CONTAINER_ID ] && [ "$( docker inspect -f {{.State.Running}} $CONTAINER_ID )" = 'true' ]; then
+    if toolboxctl::is_nfs_server_running ; then
         echo "Running"
     else
         echo "NotRunning"
     fi
 }
+
+function toolboxctl::is_nfs_server_running(){
+    if [ $NFS_CONTAINER_ID ] && [ "$( docker inspect -f {{.State.Running}} $NFS_CONTAINER_ID )" = 'true' ]; then
+        return 1;
+    else
+        return 0;
+    fi
+}
+
 
 function toolboxctl::main(){
     toolboxctl::initialize
@@ -361,7 +394,11 @@ function toolboxctl::main(){
             toolboxctl::link_libraries
             ;;
         nfs:start)
-            toolboxctl::start_nfs_server
+            if [ $NFS_RUNNING = 1 ]; then
+                log "NFS server is already running"
+            else
+                toolboxctl::start_nfs_server
+            fi
             ;;
         nfs:stop)
             toolboxctl::stop_nfs_server
