@@ -35,7 +35,7 @@ DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:$DOCKER_CONTAINER_PATH "
 # MAIN SERVICE
 #
 MAIN_CONTAINER_PRIVILIGED="${MAIN_CONTAINER_PRIVILIGED:-false}"
-MAIN_CONTAINER_NAME="toolbox_main"
+MAIN_CONTAINER_NAME="develop_toolbox_main"
 MAIN_CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 if [ -z $MAIN_CONTAINER_IMAGE ]; then
     MAIN_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
@@ -71,7 +71,7 @@ YAML
 # NFS SERVICE
 #
 NFS_CONTAINER_PRIVILIGED="${NFS_CONTAINER_PRIVILIGED:-true}"
-NFS_CONTAINER_NAME="toolbox_nfs_server"
+NFS_CONTAINER_NAME="develop_toolbox_nfs_server"
 NFS_CONTAINER_MODE="-d"
 NFS_CONTAINER_IP="${NFS_CONTAINER_IP-127.0.0.1}"
 NFS_CONTAINER_PORT="${NFS_CONTAINER_PORT:-2049}"
@@ -82,7 +82,7 @@ NFS_CONTAINER_COMMAND="nfsd"
 NFS_CONTAINER_BINARIES_PATH="${NFS_CONTAINER_BINARIES_PATH:-/usr/local/bin}"
 NFS_CONTAINER_LIBRARIES_PATH="${NFS_CONTAINER_LIBRARIES_PATH:-/usr/local/lib}"
 NFS_CONTAINER_LIB="hg kubernetes"
-NFS_EXPORT_0="/usr/local/lib *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+NFS_EXPORT_0="/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
 NFS_DOCKER_COMPOSE=$( cat <<YAML
 version: "3.5"
 services:
@@ -353,8 +353,8 @@ function toolboxctl::nfs::start(){
             #NFS_EXPORT_1="/usr/local/lib *(fsid=1,ro,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
             
             log "Starting nfs container"
-            #docker run -d --name toolbox_nfs_server --privileged -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
-            #docker run -d --name toolbox_nfs_server --cap-add=NET_ADMIN -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
+            #docker run -d --name ${NFS_CONTAINER_NAME} --privileged -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
+            #docker run -d --name ${NFS_CONTAINER_NAME} --cap-add=NET_ADMIN -p 2049:2049 -v $HOME:/nfsshare -e PERMITTED=$PRIVATE_NETWORKS -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest
             docker run -d \
                 --name "$NFS_CONTAINER_NAME" \
                 --net host \
@@ -436,7 +436,7 @@ function toolboxctl::nfs::link::libraries(){
 
 function toolboxctl::nfs::mount::volumes(){
     log "Mounting nfs libraries..."
-    while ! docker exec toolbox_nfs_server docker-rediness-test; do
+    while ! docker exec ${NFS_CONTAINER_NAME} docker-rediness-test; do
         if [ "$( docker inspect -f {{.State.Running}} $(docker ps -aqf "name=$NFS_CONTAINER_NAME") )" != 'true' ]; then
             err "NFS: Container failed, printing log and exiting"
             docker logs $NFS_CONTAINER_NAME
@@ -445,7 +445,7 @@ function toolboxctl::nfs::mount::volumes(){
         sleep 1;
     done
 
-    if docker exec toolbox_nfs_server docker-rediness-test; then
+    if docker exec $NFS_CONTAINER_NAME docker-rediness-test; then
         
         for LIB in $NFS_CONTAINER_LIB;
         do
