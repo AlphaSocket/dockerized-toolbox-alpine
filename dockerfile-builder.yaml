@@ -189,9 +189,10 @@ setup:
         - curl -fsvSL https://gist.githubusercontent.com/AlphaSocket/9780449ae2e3222e580d672f9aed68ae/raw/4c9877313f45d27ebdcd66c87e602d9302e8cbbd/node-link-dependencies -o ${BUILD_PATHS_BINARIES_FOLDER}/node-link-dependencies
         
         - curl -fsvSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
-        - sed -i 's/#!\/usr\/bin\/env bash/#!\/bin\/bash/g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+        - sed -i 's_#!/usr/bin/env bash_#!/bin/bash_g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
         - echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab 
         - echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
+        - rm -rf /etc/exports
         
         # Final config
         - chmod -R +x ${BUILD_PATHS_BINARIES_FOLDER}
@@ -259,77 +260,9 @@ test:
     #
     - title: "Testing container readiness"
       commands:
-        #- curl -fSsL https://raw.githubusercontent.com/AlphaSocket/dockerized-toolbox-alpine/master/bin/toolboxctl -o bin/toolboxctl
-        #- chmod +x bin/toolboxctl
-        #- export MAIN_CONTAINER_IMAGE="${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}"
-        #- bin/toolboxctl start
-        #- "TEST_CONTAINER_MAIN_ID=$(bin/toolboxctl get:container:id)"
-        #
-        #-u $(id -u):$(getent group docker | cut -d: -f3)
-        #
-        # TODO: remove privileged and test capabilities when platform support them
-        # --cap-add SYS_ADMIN
-        # --cap-add NET_ADMIN
-        # --cap-add SYS_MODULE
-        # --cap-add DAC_READ_SEARCH
-        # --cap-add LINUX_IMMUTABLE
-        # --cap-add IPC_LOCK
-        # --cap-add IPC_OWNER
-        # --cap-add SYS_RAWIO
-        # --cap-add SYS_CHROOT
-        # --cap-add SYS_PTRACE
-        # --cap-add SYS_PACCT
-        # --cap-add SYS_BOOT
-        # --cap-add SYS_NICE
-        # --cap-add SYS_RESOURCE
-        # --cap-add SYS_TIME
-        # --cap-add SYS_TTY_CONFIG
-        # --cap-add MKNOD
-        # --cap-add LEASE
-        # --cap-add AUDIT_CONTROL
-        # --cap-add SETFCAP
-        # --cap-add MAC_OVERRIDE
-        # --cap-add MAC_ADMIN
-        # --cap-add SYSLOG
-        # --cap-add WAKE_ALARM
-        # --cap-add BLOCK_SUSPEND
-        - 'TEST_CONTAINER_MAIN_ID=$(
-             docker run
-               -d --name=$TEST_CONTAINER_NAME
-                --privileged
-                --net host
-                -v $TEST_CONTAINER_VOLUMES_HOME
-                -v $TEST_CONTAINER_VOLUMES_SOCKET
-                -e NFS_DISABLE_VERSION_3=1
-                -e NFS_EXPORT_0="/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
-                -e HOME=$TEST_CONTAINER_ENVVARS_HOME
-                -w $TEST_CONTAINER_WORKDIR
-                ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
-           )'
-        - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
-        - TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
-        - MAX_TRIES=300
-        - SECONDS_BETWEEN_TRIES=1
-        - c=0
-        - while ! eval "$TEST_CONDITION"; 
-          do 
-            if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BREAK_CONDITION" ; then
-                echo "Error $TEST_CONTAINER_NAME container failed, printing logs and exiting\n";
-                docker logs $TEST_CONTAINER_MAIN_ID;
-                exit 1;
-              else
-                c=$(($c + 1));
-            fi;
-            echo "Try $c failed"; 
-            sleep ${SECONDS_BETWEEN_TRIES}; 
-          done && echo "### Container ready \n"
-
-    # 
-    # Run nginx
-    # 
-    - title: "Tests"
-      commands:
-        - touch ../testing_mount
-        - mkdir -p /tmp/test_mount_home
-        - "sudo mount -v -t nfs 127.0.0.1:${TEST_CONTAINER_ENVVARS_HOME} /tmp/test_mount_home"
-        - ls -al /tmp/test_mount_home/testing_mount
+        - chmod +x bin/toolboxctl
+        - export MAIN_CONTAINER_IMAGE="${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}"
+        - export NFS_CONTAINER_IMAGE="${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}"
+        - bin/toolboxctl up
+        
+        
