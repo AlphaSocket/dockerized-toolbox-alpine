@@ -114,12 +114,32 @@ YAML
 )
 
 # Globals
-log() {
+function log() {
   echo -ne "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@\n" >&1
 }
 
-err() {
+function err() {
   echo -ne "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@\n" >&2
+}
+
+function global::test(){
+    TEST_CONDITION="${1:-true}"
+    FAILURE_COMMAND="${2:-echo 'Failure'}"
+    SUCCESS_COMMAND="${3:-echo 'Success'}"
+    MAX_TRIES=${4:-300}
+    SECONDS_BETWEEN_TRIES=${5:-1}
+    TEST_BREAK_CONDITION="${6:-false}"
+    c=0
+    
+    while ! eval "$TEST_CONDITION"; do
+        if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BREAK_CONDITION" ; then
+            eval "$FAILURE_COMMAND";
+            exit 1;
+        else
+            c=$(($c + 1));
+        fi;
+        sleep ${SECONDS_BETWEEN_TRIES}; 
+    done && eval "$SUCCESS_COMMAND";
 }
 
 #
@@ -440,15 +460,12 @@ function toolboxctl::nfs::link::libraries(){
 function toolboxctl::nfs::mount::volumes(){
     log "Mounting nfs libraries..."
     
-    while ! docker exec ${NFS_CONTAINER_NAME} docker-rediness-test; do
-        if [ "$( docker inspect -f {{.State.Running}} $(docker ps -aqf "name=$NFS_CONTAINER_NAME") )" != 'true' ]; then
-            err "NFS: Container failed, printing log and exiting"
-            docker logs $NFS_CONTAINER_NAME
-            exit 1;
-        fi
-        sleep 1;
-    done
-
+    global::test "docker exec ${NFS_CONTAINER_NAME} docker-rediness-test" \
+        "err 'NFS: Container failed, printing log and exiting' && docker logs $NFS_CONTAINER_NAME" \
+        true \
+        300 1 \
+        '[ "$(toolboxctl::nfs::is::running)" = "false" ]'
+    
     if docker exec $NFS_CONTAINER_NAME docker-rediness-test; then
         
         for LIB in $(toolboxctl::nfs::get::libraries) ;

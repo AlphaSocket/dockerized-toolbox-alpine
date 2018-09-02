@@ -260,26 +260,8 @@ test:
     #
     # Starting
     #
-    - title: "Testing container readiness"
+    - title: "Testing"
       commands:
-        - TEST_CONDITION="docker exec $TEST_CONTAINER_MAIN_ID docker-rediness-test"
-        - TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "$TEST_CONTAINER_MAIN_ID")" != "true" ]'
-        - MAX_TRIES=300
-        - SECONDS_BETWEEN_TRIES=1
-        - c=0
-        - while ! eval "$TEST_CONDITION"; 
-          do 
-            if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BREAK_CONDITION" ; then
-                echo "Error $TEST_CONTAINER_NAME container failed, printing logs and exiting\n";
-                docker logs $TEST_CONTAINER_MAIN_ID;
-                exit 1;
-              else
-                c=$(($c + 1));
-            fi;
-            echo "Try $c failed"; 
-            sleep ${SECONDS_BETWEEN_TRIES}; 
-          done && echo "### Container ready \n"
-
         - chmod +x bin/toolboxctl
         - mkdir -p ~/home/lib/
         - export MAIN_CONTAINER_IMAGE="${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}"
