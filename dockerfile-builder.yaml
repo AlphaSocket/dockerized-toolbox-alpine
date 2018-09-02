@@ -117,9 +117,8 @@ setup:
         #
         - pip install docker-compose
         
-        #- DRY_LATEST=$(git-get-latest-release https://github.com/moncho/dry/ )
-        #- curl -fsvSL https://github.com/moncho/dry/releases/download/${DRY_LATEST}/dry-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
-        - curl https://moncho.github.io/dry/dryup.sh | sh
+        - DRY_LATEST=$(git-get-latest-release https://github.com/moncho/dry/ )
+        - curl -fsvSL https://github.com/moncho/dry/releases/download/${DRY_LATEST}/dry-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
         
         #
         # Clouds
@@ -138,7 +137,7 @@ setup:
         - KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
         - curl -fsvSL https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_LATEST}/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
         
-        - HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ | sed -e "s/ //g" )
+        - HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ | sed -e "s/ //g" | sed -e "s/latest//g" )
         - mkdir /tmp/helm
         - curl -fsvSL "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz" -o /tmp/helm/helm.tar.gz
         - tar -xvf /tmp/helm/helm.tar.gz -C /tmp/helm/

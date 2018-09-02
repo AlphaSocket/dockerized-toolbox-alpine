@@ -39,7 +39,8 @@ MAGESCAN_LATEST=$(git-get-latest-release https://github.com/steverobbins/magesca
 curl -fsvSL https://github.com/steverobbins/magescan/releases/download/${MAGESCAN_LATEST}/magescan.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/magescan.phar
 pip install mwscan
 pip install docker-compose
-curl https://moncho.github.io/dry/dryup.sh | sh
+DRY_LATEST=$(git-get-latest-release https://github.com/moncho/dry/ )
+curl -fsvSL https://github.com/moncho/dry/releases/download/${DRY_LATEST}/dry-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
 pip install awscli
 GCLOUD_VERSION="203.0.0"
 curl -fsvSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz -o /tmp/google-cloud-sdk-linux-x86_64.tar.gz
@@ -48,7 +49,7 @@ ln -s /usr/local/lib/google-cloud-sdk/bin/* /usr/local/bin/
 rm /tmp/google-cloud-sdk-linux-x86_64.tar.gz
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 curl -fsvSL https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_LATEST}/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
-HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ | sed -e "s/ //g" )
+HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ | sed -e "s/ //g" | sed -e "s/latest//g" )
 mkdir /tmp/helm
 curl -fsvSL "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz" -o /tmp/helm/helm.tar.gz
 tar -xvf /tmp/helm/helm.tar.gz -C /tmp/helm/
