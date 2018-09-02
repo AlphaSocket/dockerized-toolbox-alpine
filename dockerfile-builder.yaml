@@ -140,7 +140,7 @@ setup:
         
         - HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ )
         - mkdir /tmp/helm
-        - curl -fsSL https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz -o /tmp/helm/helm.tar.gz
+        - curl -fsSL "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz" -o /tmp/helm/helm.tar.gz
         - tar -xvf /tmp/helm/helm.tar.gz -C /tmp/helm/
         - mv /tmp/helm/linux-amd64/helm ${BUILD_PATHS_BINARIES_FOLDER}/helm
         
