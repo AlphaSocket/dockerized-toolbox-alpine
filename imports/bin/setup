@@ -31,8 +31,8 @@ curl -fsvSL https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installe
 chmod +x /tmp/gitflow-installer.sh
 /tmp/gitflow-installer.sh
 rm /tmp/gitflow-installer.sh
-curl -fsvSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o ${BUILD_PATHS_BINARIES_FOLDER}/git-get-latest-release
-chmod +x ${BUILD_PATHS_BINARIES_FOLDER}/git-get-latest-release
+curl -fsvSL https://raw.githubusercontent.com/AlphaSocket/git-get-latest-release/master/get-latest-release -o ${BUILD_PATHS_BINARIES_FOLDER}/get-latest-release
+chmod +x ${BUILD_PATHS_BINARIES_FOLDER}/get-latest-release
 curl -fsvSL https://phar.phpunit.de/phpunit.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpunit.phar
 curl -fsvSL http://static.phpmd.org/php/latest/phpmd.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpmd.phar
 curl -fsvSL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/phpcs.phar
@@ -43,13 +43,13 @@ curl -fsvSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 curl -fsvSL https://files.magerun.net/n98-magerun-latest.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/n98-magerun.phar
 curl -fsvSL https://raw.githubusercontent.com/mhauri/generate-modman/master/generate-modman -o ${BUILD_PATHS_BINARIES_FOLDER}/generate-modman
 curl -fsvSL https://raw.githubusercontent.com/colinmollenhour/modman/master/modman -o ${BUILD_PATHS_BINARIES_FOLDER}/modman
-MAGECONFIGSYNC_LATEST=$(git-get-latest-release https://github.com/punkstar/mageconfigsync )
+MAGECONFIGSYNC_LATEST=$(get-latest-release https://github.com/punkstar/mageconfigsync )
 curl -fsvSL https://github.com/punkstar/mageconfigsync/releases/download/${MAGECONFIGSYNC_LATEST}/mageconfigsync-${MAGECONFIGSYNC_LATEST}.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/mageconfigsync.phar
-MAGESCAN_LATEST=$(git-get-latest-release https://github.com/steverobbins/magescan )
+MAGESCAN_LATEST=$(get-latest-release https://github.com/steverobbins/magescan )
 curl -fsvSL https://github.com/steverobbins/magescan/releases/download/${MAGESCAN_LATEST}/magescan.phar -o ${BUILD_PATHS_BINARIES_FOLDER}/magescan.phar
 pip install mwscan
 pip install docker-compose
-DRY_LATEST=$(git-get-latest-release https://github.com/moncho/dry/ )
+DRY_LATEST=$(get-latest-release https://github.com/moncho/dry/ )
 curl -fsvSL https://github.com/moncho/dry/releases/download/${DRY_LATEST}/dry-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/dry
 pip install awscli
 GCLOUD_VERSION="203.0.0"
@@ -59,19 +59,19 @@ ln -s /usr/local/lib/google-cloud-sdk/bin/* /usr/local/bin/
 rm /tmp/google-cloud-sdk-linux-x86_64.tar.gz
 KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 curl -fsvSL https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_LATEST}/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
-HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ | sed -e "s/ //g" | sed -e "s/latest//g" )
+HELM_LATEST=$(get-latest-release https://github.com/kubernetes/helm/ | sed -e "s/ //g" | sed -e "s/latest//g" )
 mkdir /tmp/helm
 curl -fsvSL "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz" -o /tmp/helm/helm.tar.gz
 tar -xvf /tmp/helm/helm.tar.gz -C /tmp/helm/
 mv /tmp/helm/linux-amd64/helm ${BUILD_PATHS_BINARIES_FOLDER}/helm
-KOPS_LATEST=$(git-get-latest-release https://github.com/kubernetes/kops )
+KOPS_LATEST=$(get-latest-release https://github.com/kubernetes/kops )
 curl -fsvSL https://github.com/kubernetes/kops/releases/download/${KOPS_LATEST}/kops-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kops
-ARGO_LATEST=$(git-get-latest-release https://github.com/argoproj/argo )
+ARGO_LATEST=$(get-latest-release https://github.com/argoproj/argo )
 curl -fsvSL https://github.com/argoproj/argo/releases/download/${ARGO_LATEST}/argo-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/argo
-KOMPOSE_LATEST=$(git-get-latest-release https://github.com/kubernetes/kompose )
+KOMPOSE_LATEST=$(get-latest-release https://github.com/kubernetes/kompose )
 curl -fsvSL https://github.com/kubernetes/kompose/releases/download/${KOMPOSE_LATEST}/kompose-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/kompose
 curl -fsvSL https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 -o ${BUILD_PATHS_BINARIES_FOLDER}/skaffold
-MINIKUBE_LATEST=$(git-get-latest-release https://github.com/kubernetes/minikube/ )
+MINIKUBE_LATEST=$(get-latest-release https://github.com/kubernetes/minikube/ )
 mkdir -p ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes
 curl -fsvSL https://storage.googleapis.com/minikube/releases/${MINIKUBE_LATEST}/minikube-linux-amd64 -o ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube
 chmod +x ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube
