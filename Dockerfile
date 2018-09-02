@@ -66,15 +66,15 @@ ADD imports/bin/docker-config /usr/local/bin/docker-config
 ADD imports/bin/docker-entrypoint /usr/local/bin/docker-entrypoint
 ADD imports/bin/docker-rediness-test /usr/local/bin/docker-rediness-test
 ADD imports/bin/docker-liveness-test /usr/local/bin/docker-liveness-test
-ADD imports/bin/setup /usr/local/bin/setup/1535912450
-ADD imports/bin/config /usr/local/bin/config/1535912450
+ADD imports/bin/setup /usr/local/bin/setup/1535926697
+ADD imports/bin/config /usr/local/bin/config/1535926697
 ADD imports/pause /usr/local/bin/pause
 ADD imports/runner /usr/local/lib/toolbox/runner
 
 
 RUN chmod +x -R /usr/local/bin && \
     sync && \
-    /usr/local/bin/setup/1535912450 && \
+    /usr/local/bin/setup/1535926697 && \
     ${BUILDER_TARGETS_CONTAINER_HARDEN}
 
 EXPOSE 2049 

@@ -6,6 +6,16 @@ echo "### Install all dependencies..."
 apk add --no-cache tini curl ca-certificates gettext $SETUP_DEPENDENCIES_SETUP $SETUP_DEPENDENCIES_CONFIG $SETUP_DEPENDENCIES_RUNTIME
 
 
+# Install NFSD
+echo "### Install NFSD..."
+curl -fsvSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+sed -i 's_#!/usr/bin/env bash_#!/bin/bash_g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab
+echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
+rm -rf /etc/exports
+mkdir -p /var/lib/nfs/v4recovery
+mkdir -p /var/lib/nfs/rpc_pipefs
+
 # Install extra binaries
 echo "### Install extra binaries..."
 mkdir -p "${BUILD_PATHS_BINARIES_FOLDER}"
@@ -79,18 +89,11 @@ unzip /tmp/browserstack/BrowserStackLocal.zip -d /tmp/browserstack
 mv /tmp/browserstack/BrowserStackLocal ${BUILD_PATHS_BINARIES_FOLDER}/BrowserStackLocal
 rm -r /tmp/browserstack
 git -C ${BUILD_PATHS_LIBRARIES_FOLDER}/ clone https://gitlab.com/alphasocket/snippets
-for bin in $(find ${BUILD_PATHS_LIBRARIES_FOLDER}/alphasocket/snippets -mindepth 1 -maxdepth 1 -type f -printf "%f "); do ln -s ${BUILD_PATHS_LIBRARIES_FOLDER}/alphasocket/snippets/${bin} ${BUILD_PATHS_BINARIES_FOLDER}/${bin}; done
-curl -fsvSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
-sed -i 's_#!/usr/bin/env bash_#!/bin/bash_g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
-echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab
-echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
-rm -rf /etc/exports
-chmod -R +x ${BUILD_PATHS_BINARIES_FOLDER}
+for bin in $(find ${BUILD_PATHS_LIBRARIES_FOLDER}/snippets -mindepth 1 -maxdepth 1 -type f ); do mv ${bin} ${BUILD_PATHS_BINARIES_FOLDER}/; done
 
-# Setup NFS folders
-echo "### Setup NFS folders..."
-mkdir -p /var/lib/nfs/v4recovery
-mkdir -p /var/lib/nfs/rpc_pipefs
+# Final config
+echo "### Final config..."
+chmod -R +x ${BUILD_PATHS_BINARIES_FOLDER}
 
 
 # Remove unecessary dependencies

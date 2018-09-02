@@ -157,12 +157,12 @@ function toolboxctl::initialize(){
         exit 1;
     fi
     
-    if lsmod | grep -Eq "^nfs\\s+" || [ -d "/sys/module/nfs" ]; then
+    if ! lsmod | grep -Eq "^nfs\\s+" && [ ! -d "/sys/module/nfs" ]; then
         err "nfs module is not loaded on the Docker host's kernel (try: modprobe nfs)";
         exit 1;
     fi
     
-    if lsmod | grep -Eq "^nfsd\\s+" || [ -d "/sys/module/nfsd" ]; then
+    if ! lsmod | grep -Eq "^nfsd\\s+" && [ ! -d "/sys/module/nfsd" ]; then
         err "nfsd module is not loaded on the Docker host's kernel (try: modprobe nfsd)";
         exit 1;
     fi
@@ -294,15 +294,16 @@ function toolboxctl::main::kill(){
 
 function toolboxctl::main::link::binaries(){
     log "Linking binaries..."
-    if [ ! function toolboxctl::main::is::running ]; then
+    if [ ! toolboxctl::main::is::running ]; then
         err "Toolbox needs to be running to link binaries"
+        exit 1;
     fi
     
     if [ ! -e "${TOOLBOX_BINARIES_PATH}/runner" ]; then
         err "Runner not found in ${TOOLBOX_BINARIES_PATH}/runner . Can't link binaries "
+        exit 1;
     fi
     
-    mkdir -p "${TOOLBOX_BINARIES_PATH}" 
     # Recreate toolboxctl link
 	unlink "${TOOLBOXCTL_TARGET_PATH}" || true
     ln -s "${TOOLBOXCTL_SOURCE_PATH}" "${TOOLBOXCTL_TARGET_PATH}"
@@ -316,7 +317,7 @@ function toolboxctl::main::link::binaries(){
         TOOLBOX_BINARY=${TOOLBOX_BINARY//[^[:print:]]/}
         
         case "$TOOLBOX_BINARY" in
-            nfsd|docker*|modprobe)
+            nfsd|docker*|modprobe|setup|config)
                 [ -z $VERBOSE ] || log "skipped $TOOLBOX_BINARY"
                 continue 2
             ;;
@@ -326,9 +327,8 @@ function toolboxctl::main::link::binaries(){
         esac
         
         if [ -e "${TOOLBOX_BINARY_SRC}" ]; then
-            [ -z $VERBOSE ] || log "Unlinking $TOOLBOX_BINARY" 
-            unlink "${BINARIES_PATH}/${TOOLBOX_BINARY}" &> /dev/null || true;
-            [ -z $VERBOSE ] || log "Linking ${BINARIES_PATH}/${TOOLBOX_BINARY} to ${TOOLBOX_BINARY_SRC} "
+            log "Linking ${BINARIES_PATH}/${TOOLBOX_BINARY} to ${TOOLBOX_BINARY_SRC} "
+            unlink "${BINARIES_PATH}/${TOOLBOX_BINARY}" 2> /dev/null || true;
             ln -s "${TOOLBOX_BINARY_SRC}" "${BINARIES_PATH}/${TOOLBOX_BINARY}";
         fi
     done;
