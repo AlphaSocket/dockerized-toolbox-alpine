@@ -29,14 +29,8 @@ fi
 echo "# Cleaned"
 
 echo "#\n# Running test\n#\n"
-# Testing container readiness
-echo "### Testing container readiness..."
-TEST_CONDITION="docker exec toolbox_nfs_server docker-rediness-test"
-TEST_BREAK_CONDITION='[ "$(docker inspect -f '{{.State.Running}}' "toolbox_nfs_server")" != "true" ]'
-MAX_TRIES=300
-SECONDS_BETWEEN_TRIES=1
-c=0
-while ! eval "$TEST_CONDITION"; do if [ $c -ge ${MAX_TRIES} ] || eval "$TEST_BREAK_CONDITION" ; then echo "Error toolbox-alpine container failed, printing logs and exiting\n"; docker logs toolbox_nfs_server; exit 1; else c=$(($c + 1)); fi; echo "Try $c failed"; sleep ${SECONDS_BETWEEN_TRIES}; done && echo "### Container ready \n"
+# Testing
+echo "### Testing..."
 chmod +x bin/toolboxctl
 mkdir -p ~/home/lib/
 export MAIN_CONTAINER_IMAGE="03192859189254/toolbox-alpine:latest"
