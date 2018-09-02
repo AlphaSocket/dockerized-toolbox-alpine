@@ -138,7 +138,7 @@ setup:
         - KUBECTL_LATEST=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
         - curl -fsSL https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_LATEST}/bin/linux/amd64/kubectl -o ${BUILD_PATHS_BINARIES_FOLDER}/kubectl
         
-        - HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ )
+        - HELM_LATEST=$(git-get-latest-release https://github.com/kubernetes/helm/ | sed -e "s/ //g" )
         - mkdir /tmp/helm
         - curl -fsSL "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_LATEST}-linux-amd64.tar.gz" -o /tmp/helm/helm.tar.gz
         - tar -xvf /tmp/helm/helm.tar.gz -C /tmp/helm/
