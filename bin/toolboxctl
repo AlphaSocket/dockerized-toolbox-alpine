@@ -35,7 +35,7 @@ DOCKER_VOLUMES=" -v $DOCKER_SOCKET_PATH:$DOCKER_CONTAINER_PATH "
 # MAIN SERVICE
 #
 MAIN_CONTAINER_PRIVILIGED="${MAIN_CONTAINER_PRIVILIGED:-false}"
-MAIN_CONTAINER_NAME="develop_toolbox_main"
+MAIN_CONTAINER_NAME="toolbox_main"
 MAIN_CONTAINER_USER="-u $USER_ID:$GROUP_ID"
 if [ -z $MAIN_CONTAINER_IMAGE ]; then
     MAIN_CONTAINER_IMAGE="alphasocket/toolbox-alpine:latest"
@@ -61,8 +61,8 @@ services:
         network_mode: host
         working_dir: $HOME
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-            - /run/mysqld:/run/mysqld
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /run/mysqld:/run/mysqld:ro
             - $HOME:$HOME
 YAML
 )
@@ -71,7 +71,7 @@ YAML
 # NFS SERVICE
 #
 NFS_CONTAINER_PRIVILIGED="${NFS_CONTAINER_PRIVILIGED:-true}"
-NFS_CONTAINER_NAME="develop_toolbox_nfs_server"
+NFS_CONTAINER_NAME="toolbox_nfs_server"
 NFS_CONTAINER_MODE="-d"
 NFS_CONTAINER_IP="${NFS_CONTAINER_IP-127.0.0.1}"
 NFS_CONTAINER_PORT="${NFS_CONTAINER_PORT:-2049}"
@@ -81,8 +81,7 @@ fi
 NFS_CONTAINER_COMMAND="nfsd"
 NFS_CONTAINER_BINARIES_PATH="${NFS_CONTAINER_BINARIES_PATH:-/usr/local/bin}"
 NFS_CONTAINER_LIBRARIES_PATH="${NFS_CONTAINER_LIBRARIES_PATH:-/usr/local/lib}"
-NFS_CONTAINER_LIB="hg kubernetes"
-NFS_EXPORT_0="/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+NFS_EXPORT_0="/ 127.0.0.1(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
 NFS_DOCKER_COMPOSE=$( cat <<YAML
 version: "3.5"
 services:
@@ -104,11 +103,11 @@ services:
             - NFS_EXPORT_0=$NFS_EXPORT_0
             - CONFIG_NFS_SHARED_DIRECTORY=/var/nfsshare
             #- CONFIG_NFS_IP_PERMITTED=10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*,127.0.0.1
-            - CONFIG_NFS_IP_PERMITTED=*
+            - CONFIG_NFS_IP_PERMITTED=127.0.0.1
             - CONFIG_NFS_SYNC=async
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-            - /run/mysqld:/run/mysqld
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /run/mysqld:/run/mysqld:ro
             - $HOME:$HOME
 YAML
 )
@@ -342,7 +341,6 @@ function toolboxctl::nfs::clean(){
 }
 
 function toolboxctl::nfs::start(){
-    
     case $CONTAINER_MANAGER in
         docker-compose)
             echo "$NFS_DOCKER_COMPOSE" | docker-compose -f - up --detach
@@ -399,13 +397,11 @@ function toolboxctl::nfs::restart(){
 }
 
 function toolboxctl::nfs::link::libraries(){
-    
     log "Linking nfs libraries..."
     if [ ! function toolboxctl::nfs::is::running ]; then
         err "NFS server needs to be running to mount libraries"
     fi
     
-    #TOOLBOX_LIBRARIES="$(toolboxctl exec find ${MAIN_CONTAINER_BINARIES_PATH} -mindepth 1 -maxdepth 1 -type l -exec echo {} \;)"
     TOOLBOX_LINKED_BINARIES='/usr/local/bin/minikube /usr/local/bin/hgflow.py'
     
     for TOOLBOX_LINKED_BINARY in $TOOLBOX_LINKED_BINARIES;
@@ -447,7 +443,7 @@ function toolboxctl::nfs::mount::volumes(){
 
     if docker exec $NFS_CONTAINER_NAME docker-rediness-test; then
         
-        for LIB in $NFS_CONTAINER_LIB;
+        for LIB in $(toolboxctl::nfs::get::libraries) ;
         do
             umount ${LIBRARIES_PATH}/$LIB &> /dev/null || true
             mkdir -p ${LIBRARIES_PATH}/$LIB &> /dev/null || true
@@ -456,35 +452,50 @@ function toolboxctl::nfs::mount::volumes(){
                 log "Forced mount ${LIBRARIES_PATH}/$LIB : $mount_command"
                 toolboxctl::nfs::echo::mounts
                 if exec $mount_command; then
-                    log "Libraries $LIB mounted on ${LIBRARIES_PATH}/$LIB ";
+                    log "Library $LIB mounted on ${LIBRARIES_PATH}/$LIB ";  
                 else
-                    log "Libraries $LIB not mounted ";
+                    log "Library $LIB not mounted ";
                 fi
             else
-                log "Libraries $LIB mounted on ${LIBRARIES_PATH}/$LIB ";
+                log "Library $LIB mounted on ${LIBRARIES_PATH}/$LIB ";
             fi
         done;
     fi
 }
 
-function toolboxctl::nfs::echo::mounts(){
-    log "Add this mounts in /etc/fstab to mount toolbox data without root:
-    
-## toolbox-mounts start ##
-127.0.0.1:${NFS_CONTAINER_BINARIES_PATH} /home/$(whoami)/bin nfs ro,nfsvers=4,proto=tcp,user,exec,noauto 0 0
-127.0.0.1:${NFS_CONTAINER_LIBRARIES_PATH} /home/$(whoami)/lib nfs ro,nfsvers=4,proto=tcp,user,exec,noauto 0 0
-## toolbox-mounts start ##
-"
-}
 function toolboxctl::nfs::unmount::volumes(){
-    for LIB in $NFS_CONTAINER_LIB;
+    log "Unmounting nfs mounts..."
+    for LIB in $(toolboxctl::nfs::get::libraries);
     do
         if [ -e "${LIBRARIES_PATH}/$LIB" ]; then
-            log "Unmounting nfs mounts..."
-            umount "${LIBRARIES_PATH}/$LIB" || true
+            umount "${LIBRARIES_PATH}/$LIB" &> /dev/null || true
         fi
     done;
 }
+
+function toolboxctl::nfs::get::libraries(){
+    LIBS="$(docker exec ${NFS_CONTAINER_NAME} bash -c "find ${NFS_CONTAINER_LIBRARIES_PATH} -type d -maxdepth 1 -mindepth 1 " 2>/dev/null | sed -e "s_${NFS_CONTAINER_LIBRARIES_PATH}/__g" )"
+    if [ -z "${LIBS}" ]; then
+        LIBS="$(find ${LIBRARIES_PATH} -type d -maxdepth 1 -mindepth 1 2> /dev/null | sed -e "s_${LIBRARIES_PATH}/__g" )"
+    fi
+    echo $LIBS | sed -e "s/\n\r\t/ /g"
+}
+
+function toolboxctl::nfs::echo::mounts(){
+    FSTAB_MESSAGE="Add this mounts in /etc/fstab to mount toolbox data without root:\n"
+    FSTAB_MESSAGE+="## toolbox-mounts start ##\n"
+
+    for LIB in $(toolboxctl::nfs::get::libraries) ;
+    do 
+        LIB=${LIB#"/urs"}
+        FSTAB_MESSAGE+="127.0.0.1:${NFS_CONTAINER_LIBRARIES_PATH}/${LIB} ${LIBRARIES_PATH}/${LIB} nfs ro,nfsvers=4,proto=tcp,user,exec,noauto 0 0\n";
+    done
+
+    FSTAB_MESSAGE+="## toolbox-mounts end ##\n"
+
+    log "$FSTAB_MESSAGE"
+}
+
 #
 # MAIN 
 #
