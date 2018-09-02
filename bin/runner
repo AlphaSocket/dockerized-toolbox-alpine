@@ -1,5 +1,0 @@
-#!/bin/bash
-last_tag=$(curl -NsISL --raw $1/releases/latest | grep Location | awk '{n=split($NF,a,"/");print a[n]}' )
-exit_code="$?"
-echo $last_tag
-exit $exit_code
