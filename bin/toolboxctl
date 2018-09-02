@@ -20,7 +20,7 @@ LIBRARIES_PATH="${LIBRARIES_PATH-$HOME/lib}"
 CONTAINER_MANAGER="${CONTAINER_MANAGER-docker-compose}"
 
 TOOLBOX_PATH="$( dirname $(dirname $(readlink -f $0) ) )"
-TOOLBOX_BINARIES_PATH="${TOOLBOX_PATH}/bin"
+TOOLBOX_BINARIES_PATH="${LIBRARIES_PATH}/toolbox"
 #TOOLBOXCTL_SOURCE_PATH="${TOOLBOX_BINARIES_PATH}/toolboxctl"
 TOOLBOXCTL_SOURCE_PATH="$(readlink -f $0)"
 TOOLBOXCTL_TARGET_PATH="${BINARIES_PATH}/toolboxctl"
@@ -148,13 +148,23 @@ function global::test(){
 
 function toolboxctl::initialize(){
     if [ -z "$DOCKER_BIN_PATH" ]; then
-        err "Docker client not found"
-        exit 1
+        err "Docker client not found";
+        exit 1;
     fi
     
     if [ "$CONTAINER_MANAGER" = "docker-compose" ] && [ -z "$DOCKER_COMPOSE" ]; then
-        err "Docker compose binary not found"
-        exit 1
+        err "Docker compose binary not found";
+        exit 1;
+    fi
+    
+    if lsmod | grep -Eq "^nfs\\s+" || [ -d "/sys/module/nfs" ]; then
+        err "nfs module is not loaded on the Docker host's kernel (try: modprobe nfs)";
+        exit 1;
+    fi
+    
+    if lsmod | grep -Eq "^nfsd\\s+" || [ -d "/sys/module/nfsd" ]; then
+        err "nfsd module is not loaded on the Docker host's kernel (try: modprobe nfsd)";
+        exit 1;
     fi
 }
 
@@ -423,39 +433,39 @@ function toolboxctl::nfs::restart(){
     toolboxctl::nfs::up
 }
 
-function toolboxctl::nfs::link::libraries(){
-    log "Linking nfs libraries..."
-    if [ ! function toolboxctl::nfs::is::running ]; then
-        err "NFS server needs to be running to mount libraries"
-    fi
-    
-    TOOLBOX_LINKED_BINARIES='/usr/local/bin/minikube /usr/local/bin/hgflow.py'
-    
-    for TOOLBOX_LINKED_BINARY in $TOOLBOX_LINKED_BINARIES;
-    do
-        TOOLBOX_LINKED_BINARY="$(basename ${TOOLBOX_LINKED_BINARY} )"
-        
-        case "$TOOLBOX_LINKED_BINARY" in
-            nfsd*|docker*|modprobe*)
-                [ -z $VERBOSE ] || log "skipped $TOOLBOX_LINKED_BINARY"
-                continue 2
-            ;;
-            *)
-                TOOLBOX_TARGET_LINK="$(toolboxctl exec readlink -nf ${MAIN_CONTAINER_BINARIES_PATH}/${TOOLBOX_LINKED_BINARY} || echo "" )"
-                # Convert link from container_link to host_link
-                TOOLBOX_BINARY_SRC="$( echo $TOOLBOX_TARGET_LINK | sed -e "s?${MAIN_CONTAINER_LIBRARIES_PATH}?${LIBRARIES_PATH}?g" )"
-            ;;
-        esac
-        
-        if [ ! -z "$TOOLBOX_BINARY_SRC" ] && [ -e "${TOOLBOX_BINARY_SRC}" ]; then
-            [ -z $VERBOSE ] || log "Unlinking $TOOLBOX_LINKED_BINARY" 
-            unlink "${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY}" &> /dev/null || true;
-            [ -z $VERBOSE ] || log "Linking ${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY} to ${TOOLBOX_BINARY_SRC} "
-            ln -s "${TOOLBOX_BINARY_SRC}" "${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY}";
-        fi
-    done;
-    
-}
+#function toolboxctl::nfs::link::libraries(){
+#    log "Linking nfs libraries..."
+#    if [ ! function toolboxctl::nfs::is::running ]; then
+#        err "NFS server needs to be running to mount libraries"
+#    fi
+#    
+#    TOOLBOX_LINKED_BINARIES='/usr/local/bin/minikube /usr/local/bin/hgflow.py'
+#    
+#    for TOOLBOX_LINKED_BINARY in $TOOLBOX_LINKED_BINARIES;
+#    do
+#        TOOLBOX_LINKED_BINARY="$(basename ${TOOLBOX_LINKED_BINARY} )"
+#        
+#        case "$TOOLBOX_LINKED_BINARY" in
+#            nfsd*|docker*|modprobe*)
+#                [ -z $VERBOSE ] || log "skipped $TOOLBOX_LINKED_BINARY"
+#                continue 2
+#            ;;
+#            *)
+#                TOOLBOX_TARGET_LINK="$(toolboxctl exec readlink -nf ${MAIN_CONTAINER_BINARIES_PATH}/${TOOLBOX_LINKED_BINARY} || echo "" )"
+#                # Convert link from container_link to host_link
+#                TOOLBOX_BINARY_SRC="$( echo $TOOLBOX_TARGET_LINK | sed -e "s?${MAIN_CONTAINER_LIBRARIES_PATH}?${LIBRARIES_PATH}?g" )"
+#            ;;
+#        esac
+#        
+#        if [ ! -z "$TOOLBOX_BINARY_SRC" ] && [ -e "${TOOLBOX_BINARY_SRC}" ]; then
+#            [ -z $VERBOSE ] || log "Unlinking $TOOLBOX_LINKED_BINARY" 
+#            unlink "${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY}" &> /dev/null || true;
+#            [ -z $VERBOSE ] || log "Linking ${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY} to ${TOOLBOX_BINARY_SRC} "
+#            ln -s "${TOOLBOX_BINARY_SRC}" "${BINARIES_PATH}/${TOOLBOX_LINKED_BINARY}";
+#        fi
+#    done;
+#    
+#}
 
 function toolboxctl::nfs::mount::volumes(){
     log "Mounting nfs libraries..."
