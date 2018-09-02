@@ -235,15 +235,18 @@ function toolboxctl::main::stop(){
     esac
 }
 
+function toolboxctl::main::up(){
+    toolboxctl::main::start
+}
+
 function toolboxctl::main::down(){
     toolboxctl::main::stop
     toolboxctl::main::clean
 }
 
 function toolboxctl::main::restart(){
-    toolboxctl::main::stop
-    toolboxctl::main::clean
-    toolboxctl::main::start
+    toolboxctl::main::down
+    toolboxctl::main::up
 }
 
 function toolboxctl::main::kill(){
@@ -367,8 +370,6 @@ function toolboxctl::nfs::start(){
                 $NFS_CONTAINER_COMMAND
             ;;
     esac
-    
-    toolboxctl::nfs::mount::volumes
 }
 
 function toolboxctl::nfs::stop(){
@@ -385,15 +386,20 @@ function toolboxctl::nfs::stop(){
     esac
 }
 
+
+function toolboxctl::nfs::up(){
+    toolboxctl::nfs::start
+    toolboxctl::nfs::mount::volumes
+}
+
 function toolboxctl::nfs::down(){
     toolboxctl::nfs::stop
     toolboxctl::nfs::clean
 }
 
 function toolboxctl::nfs::restart(){
-    toolboxctl::nfs::stop
-    toolboxctl::nfs::clean
-    toolboxctl::nfs::start
+    toolboxctl::nfs::down
+    toolboxctl::nfs::up
 }
 
 function toolboxctl::nfs::link::libraries(){
