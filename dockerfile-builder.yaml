@@ -65,7 +65,17 @@ setup:
     #    - chmod 766 /var/lib/nfs/rpc_pipefs 
     #    - chmod 766 /var/lib/nfs/v4recovery
     #    
-        
+    - title: "Install NFSD"
+      commands:
+        # NFSD - SemaphoreCI can't handle the NFS 
+        - curl -fsvSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+        - sed -i 's_#!/usr/bin/env bash_#!/bin/bash_g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
+        - echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab 
+        - echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
+        - rm -rf /etc/exports
+        - mkdir -p /var/lib/nfs/v4recovery
+        - mkdir -p /var/lib/nfs/rpc_pipefs
+    
     - title: "Install extra binaries"
       commands:
         - mkdir -p "${BUILD_PATHS_BINARIES_FOLDER}"
@@ -181,24 +191,13 @@ setup:
         
         # Snippets
         - git -C ${BUILD_PATHS_LIBRARIES_FOLDER}/ clone https://gitlab.com/alphasocket/snippets
-        - for bin in $(find ${BUILD_PATHS_LIBRARIES_FOLDER}/alphasocket/snippets -mindepth 1 -maxdepth 1 -type f -printf "%f "); do
-            ln -s ${BUILD_PATHS_LIBRARIES_FOLDER}/alphasocket/snippets/${bin} ${BUILD_PATHS_BINARIES_FOLDER}/${bin};
+        - for bin in $(find ${BUILD_PATHS_LIBRARIES_FOLDER}/snippets -mindepth 1 -maxdepth 1 -type f ); do
+            mv ${bin} ${BUILD_PATHS_BINARIES_FOLDER}/;
           done
         
-        # NFSD - SemaphoreCI can't handle the NFS 
-        - curl -fsvSL https://raw.githubusercontent.com/ehough/docker-nfs-server/master/entrypoint.sh -o ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
-        - sed -i 's_#!/usr/bin/env bash_#!/bin/bash_g' ${BUILD_PATHS_BINARIES_FOLDER}/nfsd
-        - echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab 
-        - echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
-        - rm -rf /etc/exports
-        
-        # Final config
-        - chmod -R +x ${BUILD_PATHS_BINARIES_FOLDER}
-        
-    - title: "Setup NFS folders"
+    - title: "Final config"
       commands:
-        - mkdir -p /var/lib/nfs/v4recovery
-        - mkdir -p /var/lib/nfs/rpc_pipefs
+        - chmod -R +x ${BUILD_PATHS_BINARIES_FOLDER}
         
 config:
   envvars:
