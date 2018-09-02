@@ -30,6 +30,7 @@ build:
     #- imports/confd-binary:/usr/bin/confd
     #- imports/confd:/etc/confd
     - imports/pause:/usr/local/bin/pause
+    - imports/runner:/usr/local/lib/toolbox/runner
 
 #
 # Setup process injected in dockerfile
