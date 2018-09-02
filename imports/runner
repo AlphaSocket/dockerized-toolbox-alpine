@@ -4,7 +4,7 @@
 #
 # Example:
 # 
-# ln -s ${PATH_TO_TOOLBOX}/bin/runner ~/bin/composer.phar
+# ln -s ${HOME}/lib/toolbox/runner ~/bin/composer.phar
 #
 # composer.phar will run in toolbox
 #

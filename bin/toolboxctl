@@ -81,6 +81,8 @@ fi
 NFS_CONTAINER_COMMAND="nfsd"
 NFS_CONTAINER_BINARIES_PATH="${NFS_CONTAINER_BINARIES_PATH:-/usr/local/bin}"
 NFS_CONTAINER_LIBRARIES_PATH="${NFS_CONTAINER_LIBRARIES_PATH:-/usr/local/lib}"
+NFS_IP_PERMITTED="${NFS_IP_PERMITTED:-127.0.0.1}"
+#NFS_IP_PERMITTED="${NFS_IP_PERMITTED:127.0.0.1,192.168.*.*,10.*.*.*,172.16-31.*.*}"
 NFS_EXPORT_0="/ 127.0.0.1(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
 NFS_DOCKER_COMPOSE=$( cat <<YAML
 version: "3.5"
@@ -102,8 +104,7 @@ services:
             - NFS_DISABLE_VERSION_3=true
             - NFS_EXPORT_0=$NFS_EXPORT_0
             - CONFIG_NFS_SHARED_DIRECTORY=/var/nfsshare
-            #- CONFIG_NFS_IP_PERMITTED=10.*.*.*,172.16.*.*,172.17.*.*,172.18.*.*,172.19.*.*,172.20.*.*,172.21.*.*,172.22.*.*,172.23.*.*,172.24.*.*,172.25.*.*,172.26.*.*,172.27.*.*,172.28.*.*,172.29.*.*,172.30.*.*,172.31.*.*,192.168.*.*,127.0.0.1
-            - CONFIG_NFS_IP_PERMITTED=127.0.0.1
+            - CONFIG_NFS_IP_PERMITTED=$NFS_IP_PERMITTED
             - CONFIG_NFS_SYNC=async
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -364,6 +365,7 @@ function toolboxctl::nfs::start(){
                 -v $HOME:$HOME \
                 -e NFS_DISABLE_VERSION_3='true' \
                 -e NFS_EXPORT_0="$NFS_EXPORT_0" \
+                -e CONFIG_NFS_IP_PERMITTED="$NFS_IP_PERMITTED" \
                 -e HOME=$HOME \
                 -w $PWD \
                 $NFS_CONTAINER_IMAGE \
@@ -373,8 +375,6 @@ function toolboxctl::nfs::start(){
 }
 
 function toolboxctl::nfs::stop(){
-    toolboxctl::nfs::unmount::volumes
-    
     case $CONTAINER_MANAGER in
         docker-compose)
             echo "$NFS_DOCKER_COMPOSE" | docker-compose -f - stop
@@ -393,6 +393,7 @@ function toolboxctl::nfs::up(){
 }
 
 function toolboxctl::nfs::down(){
+    toolboxctl::nfs::unmount::volumes
     toolboxctl::nfs::stop
     toolboxctl::nfs::clean
 }
@@ -438,6 +439,7 @@ function toolboxctl::nfs::link::libraries(){
 
 function toolboxctl::nfs::mount::volumes(){
     log "Mounting nfs libraries..."
+    
     while ! docker exec ${NFS_CONTAINER_NAME} docker-rediness-test; do
         if [ "$( docker inspect -f {{.State.Running}} $(docker ps -aqf "name=$NFS_CONTAINER_NAME") )" != 'true' ]; then
             err "NFS: Container failed, printing log and exiting"
@@ -451,7 +453,7 @@ function toolboxctl::nfs::mount::volumes(){
         
         for LIB in $(toolboxctl::nfs::get::libraries) ;
         do
-            umount ${LIBRARIES_PATH}/$LIB &> /dev/null || true
+            umount ${LIBRARIES_PATH}/$LIB || true
             mkdir -p ${LIBRARIES_PATH}/$LIB &> /dev/null || true
             if ! mount ${LIBRARIES_PATH}/$LIB ; then
                 mount_command="sudo mount -v -t nfs4 127.0.0.1:${NFS_CONTAINER_LIBRARIES_PATH}/$LIB ${LIBRARIES_PATH}/$LIB"
@@ -474,7 +476,8 @@ function toolboxctl::nfs::unmount::volumes(){
     for LIB in $(toolboxctl::nfs::get::libraries);
     do
         if [ -e "${LIBRARIES_PATH}/$LIB" ]; then
-            umount "${LIBRARIES_PATH}/$LIB" &> /dev/null || true
+            ## TODO: add timer in case of force umount needed
+            umount "${LIBRARIES_PATH}/$LIB" || true
         fi
     done;
 }
@@ -493,7 +496,6 @@ function toolboxctl::nfs::echo::mounts(){
 
     for LIB in $(toolboxctl::nfs::get::libraries) ;
     do 
-        LIB=${LIB#"/urs"}
         FSTAB_MESSAGE+="127.0.0.1:${NFS_CONTAINER_LIBRARIES_PATH}/${LIB} ${LIBRARIES_PATH}/${LIB} nfs ro,nfsvers=4,proto=tcp,user,exec,noauto 0 0\n";
     done
 
