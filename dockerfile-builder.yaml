@@ -301,7 +301,7 @@ test:
                 -v $TEST_CONTAINER_VOLUMES_HOME
                 -v $TEST_CONTAINER_VOLUMES_SOCKET
                 -e NFS_DISABLE_VERSION_3=1
-                -e NFS_EXPORT_0="${TEST_CONTAINER_ENVVARS_HOME} *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+                -e NFS_EXPORT_0="/ *(fsid=0,rw,sync,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
                 -e HOME=$TEST_CONTAINER_ENVVARS_HOME
                 -w $TEST_CONTAINER_WORKDIR
                 ${BUILD_USER}/${BUILD_NAME}:${BUILD_VERSION}
@@ -331,5 +331,5 @@ test:
       commands:
         - touch ../testing_mount
         - mkdir -p /tmp/test_mount_home
-        - "sudo mount -v -t nfs 127.0.0.1:/ /tmp/test_mount_home"
+        - "sudo mount -v -t nfs 127.0.0.1:${TEST_CONTAINER_ENVVARS_HOME} /tmp/test_mount_home"
         - ls -al /tmp/test_mount_home/testing_mount
