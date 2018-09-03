@@ -173,7 +173,7 @@ setup:
         - ln -s ${BUILD_PATHS_LIBRARIES_FOLDER}/kubernetes/minikube ${BUILD_PATHS_BINARIES_FOLDER}/minikube
         ## kubeadm DIND
         - git -C ${BUILD_PATHS_LIBRARIES_FOLDER}/ clone https://github.com/kubernetes-sigs/kubeadm-dind-cluster
-        - ln -s ${BUILD_PATHS_LIBRARIES_FOLDER}/kubeadm-dind-cluster/dind-cluster.sh ${BUILD_PATHS_BINARIES_FOLDER}/dind-cluster.sh
+        - cp ${BUILD_PATHS_LIBRARIES_FOLDER}/kubeadm-dind-cluster/dind-cluster.sh ${BUILD_PATHS_BINARIES_FOLDER}/dind-cluster.sh
         
         # OnePassword
         - mkdir /tmp/op
@@ -194,6 +194,7 @@ setup:
         - for bin in $(find ${BUILD_PATHS_LIBRARIES_FOLDER}/snippets -mindepth 1 -maxdepth 1 -type f ); do
             mv ${bin} ${BUILD_PATHS_BINARIES_FOLDER}/;
           done
+        - git -C ${BUILD_PATHS_LIBRARIES_FOLDER}/snippets checkout --force
         
     - title: "Final config"
       commands:
