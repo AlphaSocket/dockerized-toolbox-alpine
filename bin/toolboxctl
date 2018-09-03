@@ -267,7 +267,11 @@ function toolboxctl::main::stop(){
 }
 
 function toolboxctl::main::up(){
-    toolboxctl::main::start
+    if [ toolboxctl::main::is:running ]; then
+        log "Toolbox is up"
+    else
+        toolboxctl::main::start ;
+    fi
 }
 
 function toolboxctl::main::down(){
@@ -418,8 +422,12 @@ function toolboxctl::nfs::stop(){
 
 
 function toolboxctl::nfs::up(){
-    toolboxctl::nfs::start
-    toolboxctl::nfs::mount::volumes
+    if [ toolboxctl::nfs::is:running ]; then
+        log "Toolbox NFS is up"
+    else
+        toolboxctl::nfs::start
+        toolboxctl::nfs::mount::volumes
+    fi
 }
 
 function toolboxctl::nfs::down(){
